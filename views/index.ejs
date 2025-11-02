@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Dashboard Absensi Siswa</h1>
+        <div id="registration-controls">
+            <p>Mode Registrasi: <b id="reg-status">OFF</b></p>
+            <button id="toggle-reg-mode">Aktifkan Mode Registrasi</button>
+        </div>
+    </header>
+
+    <main>
+        <h2>Absensi Hari Ini</h2>
+        <div class="table-container">
+            <table id="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Waktu</th>
+                        <th>Nama Siswa</th>
+                        <th>ID Siswa</th>
+                        <th>Status</th>
+                        <th>Foto Validasi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (attendances.length > 0) { %>
+                        <% attendances.forEach(att => { %>
+                            <tr id="att-<%= att._id %>">
+                                <td><%= new Date(att.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) %></td>
+                                <td><%= att.student.name %></td>
+                                <td><%= att.student.studentId %></td>
+                                <td><span class="status status-<%= att.status.toLowerCase() %>"><%= att.status %></span></td>
+                                <td>
+                                    <% if (att.photoUrl) { %>
+                                        <img src="<%= att.photoUrl %>" alt="Foto Absensi" width="80">
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr id="no-data">
+                            <td colspan="5">Belum ada data absensi hari ini.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="registration-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h2>Registrasi Kartu Baru</h2>
+            <p>Tap kartu baru terdeteksi! Silakan lengkapi data di bawah ini.</p>
+            <form id="registration-form">
+                <label for="reg-uid">UID Kartu:</label>
+                <input type="text" id="reg-uid" name="uid" readonly>
+                
+                <label for="reg-name">Nama Siswa:</label>
+                <input type="text" id="reg-name" name="name" required placeholder="Masukkan nama lengkap...">
+                
+                <label for="reg-student-id">ID Siswa (NISN):</label>
+                <input type="text" id="reg-student-id" name="studentId" required placeholder="Masukkan ID siswa...">
+                
+                <div class="modal-actions">
+                    <button type="submit">Simpan Pendaftaran</button>
+                    <button type="button" id="cancel-reg-button">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <footer>
+        <a href="/register">Halaman Registrasi Manual</a>
+    </footer>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
