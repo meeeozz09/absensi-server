@@ -1,43 +1,56 @@
+// public/js/dashboard.js - VERSI LENGKAP DAN DIPERBAIKI
+
 document.addEventListener('DOMContentLoaded', () => {
 
+    // --- Seleksi Elemen DOM ---
     const tableBody = document.querySelector('#attendance-table tbody');
     const toggleBtn = document.getElementById('toggle-reg-mode');
     const regStatus = document.getElementById('reg-status');
     const modal = document.getElementById('registration-modal');
     const regForm = document.getElementById('registration-form');
     const cancelRegButton = document.getElementById('cancel-reg-button');
-
+    const absentStudentList = document.getElementById('absent-student-list');
+    const currentDateEl = document.getElementById('current-date');
+    const exportButton = document.getElementById('export-button');
     let isRegistrationMode = false;
 
+    // --- Inisialisasi Halaman ---
+    function initializePage() {
+        const today = new Date();
+        currentDateEl.textContent = `Tanggal ${today.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}`;
+        absentStudentList.addEventListener('click', (event) => {
+            if (event.target.classList.contains('btn-save-manual')) {
+                handleManualAttendance(event);
+            }
+        });
+    }
+
+    // --- Koneksi WebSocket ---
     const wsUrl = `ws://${window.location.host}`;
     const socket = new WebSocket(wsUrl);
 
-    socket.onopen = () => {
-        console.log('✅ Terhubung ke WebSocket server');
-    };
+    socket.onopen = () => console.log('✅ Terhubung ke WebSocket server');
+    socket.onclose = () => console.log('❌ Terputus dari WebSocket server. Silakan refresh halaman.');
+    socket.onerror = (error) => console.error('WebSocket Error:', error);
 
+    // --- Menerima dan Memproses Pesan dari Server ---
     socket.onmessage = (event) => {
         try {
             const message = JSON.parse(event.data);
             console.log('Pesan diterima dari server:', message);
-
+            
             switch (message.type) {
-                case 'welcome':
-                    console.log('Pesan sambutan:', message.message);
-                    break;
-                
                 case 'mode_status':
                     isRegistrationMode = message.isRegistrationMode;
                     updateRegistrationUI();
                     break;
-
                 case 'registration_prompt':
                     openRegistrationModal(message.uid);
                     break;
-
                 case 'new_attendance':
                 case 'update_attendance':
-                    updateAttendanceTable(message.data);
+                    upsertAttendanceRow(message.data);
+                    fetchAbsentStudents(); 
                     break;
             }
         } catch (error) {
@@ -45,53 +58,140 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    socket.onclose = () => {
-        console.log('❌ Terputus dari WebSocket server. Mencoba menghubungkan kembali...');
-    };
-
-    socket.onerror = (error) => {
-        console.error('WebSocket Error:', error);
-    };
-
     function updateRegistrationUI() {
         regStatus.textContent = isRegistrationMode ? 'ON' : 'OFF';
-        toggleBtn.textContent = isRegistrationMode ? 'Nonaktifkan Mode Registrasi' : 'Aktifkan Mode Registrasi';
+        toggleBtn.textContent = isRegistrationMode ? 'Nonaktifkan' : 'Aktifkan';
         toggleBtn.classList.toggle('active', isRegistrationMode);
     }
 
     function openRegistrationModal(uid) {
         document.getElementById('reg-uid').value = uid;
-        modal.style.display = 'flex';
+        modal.classList.add('visible');
     }
 
     function closeRegistrationModal() {
-        modal.style.display = 'none';
-        regForm.reset();
+        modal.classList.remove('visible');
+        setTimeout(() => {
+            regForm.reset();
+        }, 300);
     }
 
-    function updateAttendanceTable(attendanceData) {
+    function upsertAttendanceRow(attData) {
         const noDataRow = document.getElementById('no-data');
-        if (noDataRow) {
-            noDataRow.remove();
-        }
+        if (noDataRow) noDataRow.remove();
 
-        let row = document.getElementById(`att-${attendanceData._id}`);
-        if (!row) {
-            row = document.createElement('tr');
-            row.id = `att-${attendanceData._id}`;
-            tableBody.prepend(row);
-        }
-
-        const statusSpan = `<span class="status status-${attendanceData.status.toLowerCase()}">${attendanceData.status}</span>`;
-        const photoImg = attendanceData.photoUrl ? `<img src="${attendanceData.photoUrl}" alt="Foto Absensi" width="80">` : '-';
+        let row = document.getElementById(`att-${attData._id}`);
         
-        row.innerHTML = `
-            <td>${new Date(attendanceData.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</td>
-            <td>${attendanceData.student.name}</td>
-            <td>${attendanceData.student.studentId}</td>
+        const studentName = attData.student ? attData.student.name : 'Siswa Dihapus';
+        const studentId = attData.student ? attData.student.studentId : '-';
+        const time = attData.status === 'HADIR' ? new Date(attData.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
+        const statusSpan = `<span class="status-badge status-${attData.status.toLowerCase()}">${attData.status}</span>`;
+        const photoImg = (attData.photoUrl && attData.photoUrl !== '/photos/default.png') 
+            ? `<img src="${attData.photoUrl}" alt="Foto Absensi">` 
+            : `<img src="/photos/default-avatar.png" alt="Avatar Default">`;
+        
+        const rowContent = `
+            <td></td> <!-- Kolom nomor, akan diisi ulang nanti -->
+            <td>${studentName}</td>
+            <td>${studentId}</td>
+            <td>${time}</td>
             <td>${statusSpan}</td>
-            <td>${photoImg}</td>
+            <td><div class="photo-cell">${photoImg}</div></td>
         `;
+
+        if (row) {
+            console.log(`Mengupdate baris: att-${attData._id}`);
+            row.innerHTML = rowContent;
+        } else {
+            console.log(`Menambahkan baris baru: att-${attData._id}`);
+            row = document.createElement('tr');
+            row.id = `att-${attData._id}`;
+            row.innerHTML = rowContent;
+            tableBody.prepend(row); 
+        }
+        
+        renumberTableRows();
+    }
+
+    function renumberTableRows() {
+        const allRows = tableBody.querySelectorAll('tr');
+        allRows.forEach((r, index) => {
+            if(r.id !== 'no-data') {
+                r.cells[0].textContent = index + 1;
+            }
+        });
+    }
+    
+    async function fetchAbsentStudents() {
+        try {
+            const response = await fetch('/api/students/absent');
+            if (!response.ok) throw new Error('Gagal mengambil data dari server');
+            const result = await response.json();
+            if (result.success) {
+                renderAbsentStudents(result.data);
+            }
+        } catch (error) {
+            console.error('Gagal mengambil daftar siswa absen:', error);
+        }
+    }
+
+    function renderAbsentStudents(students) {
+        absentStudentList.innerHTML = ''; 
+        if (students.length === 0) {
+            absentStudentList.innerHTML = '<li class="all-present">Semua siswa sudah tercatat kehadirannya!</li>';
+            return;
+        }
+        students.forEach(student => {
+            const listItem = document.createElement('li');
+            listItem.className = 'absent-student-item';
+            listItem.id = `absent-${student._id}`;
+            listItem.innerHTML = `
+                <div class="student-info">
+                    <span>${student.name}</span>
+                    <small>${student.studentId}</small>
+                </div>
+                <div class="status-buttons">
+                    <select>
+                        <option value="">-- Status --</option>
+                        <option value="IZIN">Izin</option>
+                        <option value="SAKIT">Sakit</option>
+                        <option value="ALFA">Alfa</option>
+                    </select>
+                    <button class="btn-save-manual" data-studentid="${student._id}">Simpan</button>
+                </div>
+            `;
+            absentStudentList.appendChild(listItem);
+        });
+    }
+
+    async function handleManualAttendance(event) {
+        const studentId = event.target.dataset.studentid;
+        const row = document.getElementById(`absent-${studentId}`);
+        const statusSelect = row.querySelector('select');
+        const selectedStatus = statusSelect.value;
+        if (!selectedStatus) {
+            alert('Silakan pilih status (Izin, Sakit, atau Alfa).');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/attendance/manual', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    studentId: studentId,
+                    date: new Date().toISOString().slice(0, 10), 
+                    status: selectedStatus,
+                    keterangan: 'Diinput manual oleh guru'
+                }),
+            });
+            if (!response.ok) {
+                const result = await response.json();
+                throw new Error(result.message || 'Gagal menyimpan absensi manual.');
+            }
+        } catch (error) {
+            alert(error.message);
+        }
     }
 
     toggleBtn.addEventListener('click', () => {
@@ -105,29 +205,31 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelRegButton.addEventListener('click', closeRegistrationModal);
 
     regForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); 
-        const formData = new FormData(regForm);
-        const data = Object.fromEntries(formData.entries());
-
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(regForm).entries());
         try {
             const response = await fetch('/api/students', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             });
-
             const result = await response.json();
-
             if (response.ok) {
                 alert('Siswa berhasil didaftarkan!');
                 closeRegistrationModal();
+                fetchAbsentStudents(); 
             } else {
                 alert(`Gagal: ${result.message}`);
             }
         } catch (error) {
-            console.error('Error saat submit form registrasi:', error);
-            alert('Terjadi kesalahan. Cek console untuk detail.');
+            alert('Terjadi kesalahan koneksi saat mendaftar.');
         }
     });
 
+    exportButton.addEventListener('click', () => {
+        window.location.href = '/api/export';
+    });
+
+    initializePage();
+    renumberTableRows(); 
 });
