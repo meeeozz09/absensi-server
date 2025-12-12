@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="background-layer"></div>
+    <div class="container">
+        <header class="main-header">
+            <div class="title-section">
+                <h1>Laporan & Ekspor Data</h1>
+                <p>Filter dan unduh data absensi dalam format Excel.</p>
+            </div>
+            <a href="/" class="btn btn-secondary">Kembali ke Dashboard</a>
+        </header>
+
+        <main>
+            <div class="report-filter-container">
+                <h2>Filter Laporan Absensi</h2>
+                <p>Pilih rentang tanggal untuk diekspor. Jika tidak diisi, semua data akan diekspor.</p>
+                
+                <div class="filter-form">
+                    <div class="form-group">
+                        <label for="start-date">Tanggal Mulai:</label>
+                        <input type="date" id="start-date">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="end-date">Tanggal Akhir:</label>
+                        <input type="date" id="end-date">
+                    </div>
+                    
+                    <button id="export-button" class="btn btn-export">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Unduh Laporan Excel
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startDateInput = document.getElementById('start-date');
+            const endDateInput = document.getElementById('end-date');
+            const exportButton = document.getElementById('export-button');
+
+            exportButton.addEventListener('click', () => {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+
+                let queryString = '';
+                if (startDate && endDate) {
+                    if (new Date(startDate) > new Date(endDate)) {
+                        alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir!');
+                        return;
+                    }
+                    queryString = `?startDate=${startDate}&endDate=${endDate}`;
+                } else if (startDate) {
+                    queryString = `?startDate=${startDate}`;
+                } else if (endDate) {
+                    queryString = `?endDate=${endDate}`;
+                }
+
+                console.log(`Mengarahkan ke: /api/export${queryString}`);
+                window.location.href = `/api/export${queryString}`;
+            });
+        });
+    </script>
+</body>
+</html>

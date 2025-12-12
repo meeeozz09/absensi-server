@@ -1,0 +1,117 @@
+<!-- views/register.ejs -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="background-layer"></div>
+
+    <div class="container">
+        <header class="main-header">
+            <div class="title-section">
+                <h1>Kelola & Registrasi Siswa</h1>
+                <p>Tambah siswa baru atau lihat daftar siswa yang sudah terdaftar.</p>
+            </div>
+            <a href="/" class="btn btn-secondary">Kembali ke Dashboard</a>
+        </header>
+
+        <main class="content-wrapper">
+            <!-- Form Registrasi Manual -->
+            <div class="form-section">
+                <h2>Tambah Siswa Baru</h2>
+                <form id="manual-register-form">
+                    <div class="form-group">
+                        <label for="reg-uid">UID Kartu RFID:</label>
+                        <input type="text" id="reg-uid" name="uid" required placeholder="Contoh: 1a2b3c4d">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-name">Nama Siswa:</label>
+                        <input type="text" id="reg-name" name="name" required placeholder="Masukkan nama lengkap siswa">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-student-id">ID Siswa (NISN):</label>
+                        <input type="text" id="reg-student-id" name="studentId" required placeholder="Masukkan ID unik siswa">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Daftarkan Siswa</button>
+                    <div id="response-message"></div>
+                </form>
+            </div>
+
+            <!-- Tabel Daftar Siswa Terdaftar -->
+            <aside class="student-list-section">
+                <h2>Siswa Terdaftar</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>NIS</th>
+                                <th>UID Kartu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (students.length > 0) { %>
+                                <% students.forEach(student => { %>
+                                    <tr>
+                                        <td><%= student.name %></td>
+                                        <td><%= student.studentId %></td>
+                                        <td><%= student.uid %></td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="3">Belum ada siswa yang terdaftar.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script>
+        const form = document.getElementById('manual-register-form');
+        const messageDiv = document.getElementById('response-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            messageDiv.textContent = 'Mendaftarkan...';
+            messageDiv.style.color = 'blue';
+
+            try {
+                const response = await fetch('/api/students', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    messageDiv.textContent = `Berhasil! Siswa "${result.data.name}" telah didaftarkan. Halaman akan dimuat ulang.`;
+                    messageDiv.style.color = 'green';
+                    form.reset();
+                    setTimeout(() => window.location.reload(), 2000);
+                } else {
+                    messageDiv.textContent = `Gagal: ${result.message}`;
+                    messageDiv.style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.textContent = 'Terjadi kesalahan koneksi.';
+                messageDiv.style.color = 'red';
+            }
+        });
+    </script>
+</body>
+</html>
