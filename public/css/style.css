@@ -328,3 +328,208 @@ tbody tr:last-child td { border-bottom: none; }
         width: 100%;
     }
 }
+
+/* ======================================================= */
+/* ==          STYLING HALAMAN LOGIN (VERSI MODERN)       == */
+/* ======================================================= */
+
+.login-page {
+    /* Background lebih gelap dengan gradient */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('/photos/school-background.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: var(--font-family); /* Pastikan font diterapkan */
+}
+
+.login-box {
+    width: 420px;
+    padding: 40px;
+    /* Efek Frosted Glass (transparan + blur) */
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px); /* Untuk Safari */
+    
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+    
+    /* Hapus efek 3D rotate, ganti dengan transisi halus */
+    transition: transform 0.3s ease;
+}
+
+/* Efek sedikit membesar saat di-hover */
+.login-box:hover {
+    transform: scale(1.02);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 35px;
+    color: var(--container-bg); /* Warna teks jadi putih agar kontras */
+}
+
+.login-header h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+.login-header h1 {
+    margin: 5px 0 0;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* Penataan ulang form group agar label di atas input */
+.login-box .form-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.login-box .form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #DDDDDD;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.login-box .form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: rgba(240, 240, 240, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    color: var(--container-bg); /* Warna teks input jadi putih */
+    font-size: 16px;
+    font-family: var(--font-family);
+    transition: all 0.2s;
+}
+
+.login-box .form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.login-box .form-group input:focus {
+    outline: none;
+    background-color: rgba(240, 240, 240, 0.3);
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(30, 199, 44, 0.3);
+}
+
+
+.btn-login {
+    width: 100%;
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    border: none;
+    background-color: var(--primary-green);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-login:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(30, 199, 44, 0.6);
+}
+
+.btn-login:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(30, 199, 44, 0.6);
+}
+
+
+#error-message {
+    margin-top: 20px;
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.5);
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    font-size: 14px;
+    /* Sembunyikan jika kosong */
+    display: none; 
+}
+
+#error-message:not(:empty) {
+    display: block; /* Tampilkan jika ada isi */
+}
+
+.password-group {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    /* Penyesuaian agar ikon pas di tengah setelah ada label */
+    transform: translateY( calc(-50% + 14px) ); 
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.toggle-password svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* --- User Controls di Header --- */
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-left: 20px;
+    border-left: 1px solid var(--border-color);
+}
+
+.user-info span strong {
+    text-transform: capitalize;
+}
+
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+}
+
+/* Penyesuaian responsive untuk header baru */
+@media (max-width: 992px) {
+    .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    .user-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .user-info {
+        padding-left: 0;
+        border-left: none;
+    }
+}

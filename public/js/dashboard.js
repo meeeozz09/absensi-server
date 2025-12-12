@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const absentStudentList = document.getElementById('absent-student-list');
     const currentDateEl = document.getElementById('current-date');
     const exportButton = document.getElementById('export-button');
+    const logoutButton = document.getElementById('logout-button');
     let isRegistrationMode = false;
 
     // --- Inisialisasi Halaman ---
@@ -229,6 +230,25 @@ document.addEventListener('DOMContentLoaded', () => {
     exportButton.addEventListener('click', () => {
         window.location.href = '/api/export';
     });
+
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST',
+                });
+
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    alert('Gagal logout.');
+                }
+            } catch (error) {
+                console.error('Error saat logout:', error);
+                alert('Gagal terhubung ke server untuk logout.');
+            }
+        });
+    }
 
     initializePage();
     renumberTableRows(); 
