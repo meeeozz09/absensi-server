@@ -1,147 +1,330 @@
+:root {
+    --bg-color: #DEE4AE;
+    --primary-green: #1EC72C;
+    --container-bg: #FFFFFF;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --font-family: 'Inter', sans-serif;
+}
+
+/* --- Reset & Basic Setup --- */
+* { box-sizing: border-box; }
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--font-family);
     margin: 0;
-    padding: 20px;
-    background-color: #f4f7f6;
-    color: #333;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #fff;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 20px;
+.container {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: var(--container-bg);
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
 }
 
-h1, h2 {
-    color: #0056b3;
-}
+/* --- Header --- */
+.main-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px; }
+.title-section h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+.title-section p { margin: 4px 0 0; color: var(--text-secondary); font-size: 16px; }
+.registration-controls { display: flex; align-items: center; gap: 12px; background-color: #f1f3f5; padding: 8px 12px; border-radius: 10px; font-size: 14px; }
+.registration-controls b { font-weight: 600; }
+#toggle-reg-mode { padding: 8px 16px; border: none; border-radius: 8px; background-color: #495057; color: white; cursor: pointer; font-weight: 500; transition: background-color 0.2s; }
+#toggle-reg-mode.active { background-color: #e74c3c; }
 
-#registration-controls {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
+/* --- Main Content Layout --- */
+.content-wrapper { display: grid; grid-template-columns: 2.5fr 1fr; gap: 40px; }
+.attendance-main h2, .manual-attendance-section h2, .report-filter-container h2, .form-section h2, .student-list-section h2 { font-size: 22px; font-weight: 600; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
 
-#toggle-reg-mode {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #28a745;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-#toggle-reg-mode.active {
-    background-color: #dc3545;
-}
-
+/* --- Table Styling --- */
 .table-container {
-    background-color: #fff;
+    overflow-x: auto; /* Ini membuat kontainer bisa di-scroll horizontal */
+    -webkit-overflow-scrolling: touch; /* Gerakan scroll lebih mulus di iOS */
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 table {
     width: 100%;
+    min-width: 700px; /* INI KUNCINYA! Paksa tabel punya lebar minimum */
     border-collapse: collapse;
+    border-spacing: 0;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
-    vertical-align: middle;
+th, td { padding: 16px 12px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; font-size: 15px; }
+thead th { font-weight: 500; font-size: 13px; text-transform: uppercase; color: var(--text-secondary); border-bottom: 2px solid var(--border-color); }
+tbody tr td:first-child { font-weight: 600; text-align: center; }
+tbody tr:last-child td { border-bottom: none; }
+
+.photo-cell img {
+    width: 80px;  /* Ukuran lebih besar */
+    height: 60px; /* Bentuk persegi panjang agar proporsional */
+    border-radius: 8px; /* Sudut sedikit tumpul (rounded corners), bukan lingkaran penuh */
+    object-fit: cover; /* Pastikan gambar mengisi kotak tanpa distorsi */
+    border: 2px solid var(--border-color);
+    transition: transform 0.2s;
 }
 
-th {
-    background-color: #007bff;
-    color: white;
+.photo-cell img:hover {
+    transform: scale(2.5); /* Efek zoom saat kursor di atas foto */
+    z-index: 10;
+    position: relative;
 }
+/* --- Status Badges --- */
+.status-badge { padding: 5px 12px; border-radius: 20px; color: white; font-weight: 500; font-size: 12px; text-transform: uppercase; display: inline-block; }
+.status-hadir { background-color: var(--primary-green); } .status-izin { background-color: #3498db; } .status-sakit { background-color: #f1c40f; color: #333; } .status-alfa { background-color: #e74c3c; }
 
-tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
+/* --- Manual Attendance Section --- */
+.manual-attendance-section p, .report-filter-container p { font-size: 14px; color: var(--text-secondary); margin-bottom: 15px; }
+#absent-student-list { list-style: none; padding: 0; max-height: 400px; overflow-y: auto; }
+.absent-student-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background-color: #f8f9fa; border-radius: 8px; margin-bottom: 10px; }
+.absent-student-item .student-info span { font-weight: 500; } .absent-student-item .student-info small { display: block; color: #95a5a6; font-size: 12px; }
+.absent-student-item .status-buttons select, .absent-student-item .status-buttons button { padding: 6px; font-size: 12px; margin-left: 8px; border-radius: 5px; border: 1px solid #ced4da; }
+.btn-save-manual { background-color: #495057; color: white; cursor: pointer; border: none; }
+.all-present { text-align: center; padding: 20px; color: var(--primary-green); font-weight: 500; font-size: 15px; }
 
-.status {
-    padding: 4px 8px;
-    border-radius: 15px;
-    color: white;
-    font-weight: bold;
-    font-size: 0.8em;
-}
+/* --- Footer Actions & Buttons --- */
+.actions-footer { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+.btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s ease-in-out; text-decoration: none; display: inline-block; text-align: center; }
+.btn-footer { background-color: #495057; color: white; }
+.btn-footer:hover { background-color: #343a40; }
+.btn-export { background-color: var(--primary-green); color: white; }
+.btn-export:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(30, 199, 44, 0.4); }
+.btn-export { display: inline-flex; align-items: center; gap: 8px; align-self: flex-end; }
 
-.status-hadir { background-color: #28a745; }
-.status-izin { background-color: #17a2b8; }
-.status-sakit { background-color: #ffc107; color: #333; }
-.status-alfa { background-color: #dc3545; }
+/* --- Forms (Manual Register, Reports) --- */
+.form-section, .report-filter-container { background-color: #f8f9fa; padding: 25px; border-radius: 12px; }
+.filter-form { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: var(--text-secondary); }
+.form-group input { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-family: var(--font-family); font-size: 15px; box-sizing: border-box; }
+.form-section button[type="submit"] { width: 100%; margin-top: 10px; padding: 12px; border-radius: 8px; border: none; background-color: var(--primary-green); color: white; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.form-section button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(30, 199, 44, 0.4); }
+#response-message { margin-top: 15px; font-weight: 500; text-align: center; }
 
-/* Styling untuk Modal */
+/* --- MODAL STYLING (UNTUK POP-UP) --- */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+    opacity: 0; /* Awalnya transparan */
+    visibility: hidden; /* Awalnya tersembunyi */
+    transition: opacity 0.3s, visibility 0.3s;
 }
-
+.modal-overlay.visible {
+    opacity: 1; /* Jadi terlihat */
+    visibility: visible; /* Jadi bisa diinteraksi */
+}
 .modal-content {
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    background: white; padding: 30px; border-radius: 12px;
+    width: 90%; max-width: 450px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    transform: scale(0.95);
+    transition: transform 0.3s;
+}
+.modal-overlay.visible .modal-content {
+    transform: scale(1); /* Efek muncul membesar */
+}
+.modal-content h2, .modal-content p { text-align: center; }
+.modal-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ======================================================= */
+/* ==                  RESPONSIVE DESIGN                  == */
+/* ======================================================= */
+
+/* --- Untuk Layar Tablet & HP Besar (di bawah 992px) --- */
+@media (max-width: 992px) {
+    .container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .content-wrapper {
+        /* Ubah layout dari 2 kolom menjadi 1 kolom */
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .attendance-main {
+        /* Pindahkan bagian absensi manual ke bawah tabel utama */
+        order: 1;
+    }
+
+    .manual-attendance-section {
+        order: 2;
+    }
 }
 
-.modal-content h2 {
-    margin-top: 0;
+
+/* --- Untuk Layar HP (di bawah 768px) --- */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        margin: 0;
+        padding: 15px;
+        border-radius: 10px;
+    }
+    
+    .main-header {
+        /* Buat header menjadi tumpukan vertikal */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .title-section h1 {
+        font-size: 22px;
+    }
+
+    .registration-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    th, td {
+        padding: 12px 8px;
+        font-size: 14px;
+    }
+
+    thead th {
+        font-size: 12px;
+    }
+
+    .photo-cell img {
+        width: 60px;
+        height: 45px;
+    }
+    
+    .actions-footer {
+        /* Buat tombol footer menjadi tumpukan */
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 100%; /* Tombol jadi full-width */
+    }
+
+    .absent-student-item {
+        /* Buat item absensi manual menjadi tumpukan vertikal */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .absent-student-item .status-buttons {
+        width: 100%;
+        display: flex;
+    }
+    .absent-student-item .status-buttons select {
+        flex-grow: 1;
+        margin-left: 0;
+    }
+    .absent-student-item .status-buttons button {
+        margin-left: 10px;
+    }
 }
 
-.modal-content form label {
-    display: block;
-    margin-top: 15px;
-    font-weight: bold;
-}
+/* --- PERBAIKAN RESPONSIVE EXTRA --- */
 
-.modal-content form input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
+/* HP kecil (max-width 576px) */
+@media (max-width: 576px) {
 
-.modal-actions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
+    /* Biarkan halaman tidak mepet pinggir */
+    body {
+        padding: 0;
+        overflow-x: hidden;
+    }
 
-.modal-actions button {
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    border: 1px solid transparent;
-}
+    .container {
+        margin: 0;
+        padding: 12px;
+        width: 100%;
+        border-radius: 0;
+    }
 
-.modal-actions button[type="submit"] {
-    background-color: #007bff;
-    color: white;
-}
+    /* Pastikan semua elemen tidak menyebabkan overflow */
+    .main-header,
+    .title-section,
+    .registration-controls,
+    .content-wrapper,
+    .actions-footer,
+    .manual-attendance-section,
+    .attendance-main {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
 
-.modal-actions button[type="button"] {
-    background-color: #6c757d;
-    color: white;
+    /* Grid pecah full */
+    .content-wrapper {
+        grid-template-columns: 1fr !important;
+        gap: 25px;
+    }
+
+    /* Header lebih rapi */
+    .main-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    /* Registrasi agar tidak mepet dan tidak overflow */
+    .registration-controls {
+        flex-wrap: wrap;
+        width: 100%;
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    #toggle-reg-mode {
+        width: 100%;
+    }
+
+    /* TABLE FIX UTAMA: pastikan tidak kepotong */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 600px; /* Dari 700px → supaya muat di HP kecil */
+    }
+
+    .photo-cell img {
+        width: 50px;
+        height: 38px;
+    }
+
+    /* Tombol footer full width */
+    .actions-footer {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    /* Item absensi manual tidak kepotong */
+    .absent-student-item {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .absent-student-item .status-buttons {
+        width: 100%;
+    }
 }
