@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import Student from '../models/Student.js';
 import Attendance from '../models/Attendance.js';
 import exceljs from 'exceljs';
+import { uploadImage } from '../config/cloudinary.js';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -49,17 +50,16 @@ router.post('/attendance/tap', async (req, res) => {
 
         let photoUrl = null;
         if (image_data) {
-            try {
-                const base64Data = image_data.replace(/^data:image\/jpeg;base64,/, "");
-                const fileName = `${Date.now()}-${uid}.jpg`;
-                const photoDir = path.join(__dirname, '..', 'public', 'photos');
-                if (!fs.existsSync(photoDir)) fs.mkdirSync(photoDir, { recursive: true });
-                const photoPath = path.join(photoDir, fileName);
-                fs.writeFileSync(photoPath, base64Data, 'base64');
-                photoUrl = `/photos/${fileName}`;
-                console.log(`[PHOTO] Foto berhasil disimpan di: ${photoUrl}`);
-            } catch (photoError) {
-                console.error('❌ Gagal menyimpan foto:', photoError);
+            const base64Data = image_data.replace(/^data:image\/jpeg;base64,/, "");
+            const publicId = `${Date.now()}-${uid}`;
+            
+            console.log(`[PHOTO] Mengupload foto ke Cloudinary...`);
+            photoUrl = await uploadImage(base64Data, publicId);
+
+            if (photoUrl) {
+                console.log(`[PHOTO] Upload Cloudinary berhasil. URL: ${photoUrl}`);
+            } else {
+                console.error('❌ Gagal upload foto ke Cloudinary.');
             }
         }
 
@@ -67,7 +67,7 @@ router.post('/attendance/tap', async (req, res) => {
             student: student._id,
             timestamp: new Date(),
             status: 'HADIR',
-            photoUrl 
+            photoUrl: photoUrl
         });
         await newAttendance.save();
         
