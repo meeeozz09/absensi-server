@@ -161,18 +161,19 @@ router.get('/students/absent', async (req, res) => {
 router.get('/export', async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
+
         const query = {};
         const dateFilter = {};
         
         if (startDate) {
             const start = new Date(startDate);
-            start.setHours(0, 0, 0, 0); 
+            start.setHours(0, 0, 0, 0);
             dateFilter.$gte = start;
         }
 
         if (endDate) {
             const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999); 
+            end.setHours(23, 59, 59, 999);
             dateFilter.$lte = end;
         }
 
@@ -184,38 +185,44 @@ router.get('/export', async (req, res) => {
 
         const attendances = await Attendance.find(query).sort({ timestamp: 'desc' }).populate('student');
 
-        if (!attendances || attendances.length === 0) {
-            return res.status(404).send('Tidak ada data absensi yang ditemukan untuk rentang tanggal yang dipilih.');
-        }
-
         const workbook = new exceljs.Workbook();
         workbook.creator = 'Sistem Absensi';
         const worksheet = workbook.addWorksheet('Laporan Absensi');
 
         worksheet.columns = [
-            { header: 'No.', key: 'no', width: 5 }, { header: 'Tanggal', key: 'tanggal', width: 20 },
-            { header: 'Waktu', key: 'waktu', width: 15 }, { header: 'ID Siswa', key: 'studentId', width: 20 },
-            { header: 'Nama Siswa', key: 'name', width: 35 }, { header: 'Status', key: 'status', width: 12 },
+            { header: 'No.', key: 'no', width: 5 },
+            { header: 'Tanggal', key: 'tanggal', width: 20 },
+            { header: 'Waktu', key: 'waktu', width: 15 },
+            { header: 'ID Siswa', key: 'studentId', width: 20 },
+            { header: 'Nama Siswa', key: 'name', width: 35 },
+            { header: 'Status', key: 'status', width: 12 },
             { header: 'Keterangan', key: 'keterangan', width: 40 }
         ];
         worksheet.getRow(1).font = { bold: true };
 
-        attendances.forEach((att, index) => {
-            if (att.student) {
-                const ts = new Date(att.timestamp);
-                worksheet.addRow({
-                    no: index + 1,
-                    tanggal: ts.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
-                    waktu: att.status === 'HADIR' ? ts.toLocaleTimeString('id-ID') : '-',
-                    studentId: att.student.studentId, name: att.student.name, status: att.status,
-                    keterangan: att.keterangan || ''
-                });
-            }
-        });
+        if (attendances.length > 0) {
+            attendances.forEach((att, index) => {
+                if (att.student) {
+                    const ts = new Date(att.timestamp);
+                    worksheet.addRow({
+                        no: index + 1,
+                        tanggal: ts.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
+                        waktu: att.status === 'HADIR' ? ts.toLocaleTimeString('id-ID') : '-',
+                        studentId: att.student.studentId,
+                        name: att.student.name,
+                        status: att.status,
+                        keterangan: att.keterangan || ''
+                    });
+                }
+            });
+        } else {
+            worksheet.addRow({ no: '-', tanggal: 'Tidak ada data ditemukan untuk periode ini.' });
+        }
 
         const fileName = `Laporan_Absensi_${new Date().toISOString().slice(0,10)}.xlsx`;
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+
         await workbook.xlsx.write(res);
         res.end();
 
@@ -224,5 +231,6 @@ router.get('/export', async (req, res) => {
         res.status(500).send('Terjadi kesalahan saat membuat file Excel. Cek log server.');
     }
 });
+
 
 export default router;

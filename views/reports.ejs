@@ -70,8 +70,6 @@
                 } else if (endDate) {
                     queryString = `?endDate=${endDate}`;
                 }
-
-                console.log(`Mengarahkan ke: /api/export${queryString}`);
                 window.location.href = `/api/export${queryString}`;
             });
         });

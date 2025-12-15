@@ -228,8 +228,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     exportButton.addEventListener('click', () => {
-        window.location.href = '/api/export';
-    });
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); 
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayString = `${year}-${month}-${day}`;
+    const exportUrl = `/api/export?startDate=${todayString}&endDate=${todayString}`;
+
+    console.log(`Mengekspor data untuk hari ini. URL: ${exportUrl}`);
+    window.location.href = exportUrl;
+});
 
     if (logoutButton) {
         logoutButton.addEventListener('click', async () => {
