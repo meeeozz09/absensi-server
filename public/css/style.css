@@ -533,3 +533,27 @@ tbody tr:last-child td { border-bottom: none; }
         border-left: none;
     }
 }
+
+.gender-options {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* Jarak antara 'Laki-laki' dan 'Perempuan' */
+    margin-top: 10px;
+}
+/* Styling untuk setiap pilihan (radio button + label) */
+.gender-option {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Jarak antara radio button dan teksnya */
+    cursor: pointer;
+}
+.gender-option label {
+    font-weight: normal; /* Override style label default */
+    margin: 0; /* Hapus margin default dari label */
+}
+.gender-option input[type="radio"] {
+    /* (Opsional) Style custom untuk radio button jika diinginkan */
+    accent-color: var(--primary-green); /* Mengubah warna centang radio button */
+    width: 1.2em;
+    height: 1.2em;
+}

@@ -95,11 +95,11 @@ router.post('/registration-mode', (req, res) => {
 // Endpoint untuk menyimpan siswa baru
 router.post('/students', async (req, res) => {
     try {
-        const { uid, name, studentId } = req.body;
-        if (!uid || !name || !studentId) {
-            return res.status(400).json({ success: false, message: "Semua field (UID, Nama, ID Siswa) harus diisi." });
+        const { uid, name, studentId, gender } = req.body;
+        if (!uid || !name || !studentId || !gender) {
+            return res.status(400).json({ success: false, message: "Semua field (UID, Nama, ID Siswa, Jenis Kelamin) harus diisi." });
         }
-        const newStudent = await Student.create({ uid, name, studentId });
+        const newStudent = await Student.create({ uid, name, studentId, gender });
         res.status(201).json({ success: true, data: newStudent });
         console.log(`[REGISTRATION] Siswa baru berhasil didaftarkan: ${name}`);
     } catch (error) {
@@ -195,6 +195,7 @@ router.get('/export', async (req, res) => {
             { header: 'Waktu', key: 'waktu', width: 15 },
             { header: 'ID Siswa', key: 'studentId', width: 20 },
             { header: 'Nama Siswa', key: 'name', width: 35 },
+            { header: 'Jenis Kelamin', key: 'gender', width: 15 },
             { header: 'Status', key: 'status', width: 12 },
             { header: 'Keterangan', key: 'keterangan', width: 40 }
         ];
@@ -210,6 +211,7 @@ router.get('/export', async (req, res) => {
                         waktu: att.status === 'HADIR' ? ts.toLocaleTimeString('id-ID') : '-',
                         studentId: att.student.studentId,
                         name: att.student.name,
+                        gender: att.student.gender, 
                         status: att.status,
                         keterangan: att.keterangan || ''
                     });

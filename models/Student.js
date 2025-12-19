@@ -22,6 +22,12 @@ const studentSchema = new mongoose.Schema({
     trim: true 
   },
 
+  gender: {
+    type: String,
+    required: [true, 'Jenis kelamin tidak boleh kosong.'],
+    enum: ['Laki-laki', 'Perempuan']
+  },
+
   createdAt: {
     type: Date,
     default: Date.now

@@ -39,6 +39,19 @@
                         <label for="reg-student-id">ID Siswa (NISN):</label>
                         <input type="text" id="reg-student-id" name="studentId" required placeholder="Masukkan ID unik siswa">
                     </div>
+                    <div class="form-group">
+                        <label>Jenis Kelamin:</label>
+                        <div class="gender-options">
+                            <div class="gender-option">
+                                <input type="radio" id="manual-gender-male" name="gender" value="Laki-laki" required>
+                                <label for="manual-gender-male">Laki-laki</label>
+                            </div>
+                            <div class="gender-option">
+                                <input type="radio" id="manual-gender-female" name="gender" value="Perempuan" required>
+                                <label for="manual-gender-female">Perempuan</label>
+                            </div>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary">Daftarkan Siswa</button>
                     <div id="response-message"></div>
                 </form>
