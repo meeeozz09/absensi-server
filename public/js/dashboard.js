@@ -1,8 +1,5 @@
-// public/js/dashboard.js - VERSI LENGKAP DAN DIPERBAIKI
-
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Seleksi Elemen DOM ---
     const tableBody = document.querySelector('#attendance-table tbody');
     const toggleBtn = document.getElementById('toggle-reg-mode');
     const regStatus = document.getElementById('reg-status');
@@ -15,10 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logout-button');
     let isRegistrationMode = false;
 
-    // --- Inisialisasi Halaman ---
     function initializePage() {
         const today = new Date();
         currentDateEl.textContent = `Tanggal ${today.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}`;
+        
         absentStudentList.addEventListener('click', (event) => {
             if (event.target.classList.contains('btn-save-manual')) {
                 handleManualAttendance(event);
@@ -26,15 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Koneksi WebSocket ---
-    const wsUrl = `ws://${window.location.host}`;
+    const isSecure = window.location.protocol === 'https:';
+    const wsProtocol = isSecure ? 'wss://' : 'ws://'; 
+    const wsUrl = `${wsProtocol}${window.location.host}`;
+    
+    console.log(`Menghubungkan ke WebSocket di: ${wsUrl}`);
     const socket = new WebSocket(wsUrl);
 
     socket.onopen = () => console.log('✅ Terhubung ke WebSocket server');
     socket.onclose = () => console.log('❌ Terputus dari WebSocket server. Silakan refresh halaman.');
     socket.onerror = (error) => console.error('WebSocket Error:', error);
 
-    // --- Menerima dan Memproses Pesan dari Server ---
     socket.onmessage = (event) => {
         try {
             const message = JSON.parse(event.data);
@@ -83,9 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let row = document.getElementById(`att-${attData._id}`);
         
+        const timestampDate = new Date(attData.timestamp);
+
         const studentName = attData.student ? attData.student.name : 'Siswa Dihapus';
         const studentId = attData.student ? attData.student.studentId : '-';
-        const time = attData.status === 'HADIR' ? new Date(attData.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
+        const time = attData.status === 'HADIR' ? timestampDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
         const statusSpan = `<span class="status-badge status-${attData.status.toLowerCase()}">${attData.status}</span>`;
         const photoImg = (attData.photoUrl && attData.photoUrl !== '/photos/default.png') 
             ? `<img src="${attData.photoUrl}" alt="Foto Absensi">` 
@@ -228,16 +229,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     exportButton.addEventListener('click', () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); 
-    const day = String(today.getDate()).padStart(2, '0');
-    const todayString = `${year}-${month}-${day}`;
-    const exportUrl = `/api/export?startDate=${todayString}&endDate=${todayString}`;
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); 
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayString = `${year}-${month}-${day}`;
+        const exportUrl = `/api/export?startDate=${todayString}&endDate=${todayString}`;
 
-    console.log(`Mengekspor data untuk hari ini. URL: ${exportUrl}`);
-    window.location.href = exportUrl;
-});
+        console.log(`Mengekspor data untuk hari ini. URL: ${exportUrl}`);
+        window.location.href = exportUrl;
+    });
 
     if (logoutButton) {
         logoutButton.addEventListener('click', async () => {
