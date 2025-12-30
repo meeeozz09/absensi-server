@@ -81,19 +81,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (noDataRow) noDataRow.remove();
 
         let row = document.getElementById(`att-${attData._id}`);
-        
-        const timestampDate = new Date(attData.timestamp);
+        const isNewRow = !row;
 
+        if (isNewRow) {
+            row = document.createElement('tr');
+            row.id = `att-${attData._id}`;
+        }
+        
         const studentName = attData.student ? attData.student.name : 'Siswa Dihapus';
         const studentId = attData.student ? attData.student.studentId : '-';
-        const time = attData.status === 'HADIR' ? timestampDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
+        const time = attData.status === 'HADIR' ? new Date(attData.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
         const statusSpan = `<span class="status-badge status-${attData.status.toLowerCase()}">${attData.status}</span>`;
-        const photoImg = (attData.photoUrl && attData.photoUrl !== '/photos/default.png') 
-            ? `<img src="${attData.photoUrl}" alt="Foto Absensi">` 
-            : `<img src="/photos/default-avatar.png" alt="Avatar Default">`;
         
-        const rowContent = `
-            <td></td> <!-- Kolom nomor, akan diisi ulang nanti -->
+        let photoImg;
+        if (attData.photoUrl && attData.photoUrl !== '/photos/default.png') {
+            photoImg = `<img src="${attData.photoUrl}" alt="Foto Absensi">`;
+        } else {
+            const avatarName = studentName.split(' ').join('+');
+            photoImg = `<img src="https://ui-avatars.com/api/?name=${avatarName}&background=random" alt="Avatar Default">`;
+        }
+
+        row.innerHTML = `
+            <td></td>
             <td>${studentName}</td>
             <td>${studentId}</td>
             <td>${time}</td>
@@ -101,15 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <td><div class="photo-cell">${photoImg}</div></td>
         `;
 
-        if (row) {
-            console.log(`Mengupdate baris: att-${attData._id}`);
-            row.innerHTML = rowContent;
-        } else {
-            console.log(`Menambahkan baris baru: att-${attData._id}`);
-            row = document.createElement('tr');
-            row.id = `att-${attData._id}`;
-            row.innerHTML = rowContent;
-            tableBody.prepend(row); 
+        if (isNewRow) {
+            tableBody.prepend(row);
         }
         
         renumberTableRows();

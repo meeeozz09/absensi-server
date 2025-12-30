@@ -58,7 +58,7 @@
                                             <% if (att.photoUrl && att.photoUrl !== '/photos/default.png') { %>
                                                 <img src="<%= att.photoUrl %>" alt="Foto Absensi">
                                             <% } else { %>
-                                                <img src="/photos/default-avatar.webp" alt="Avatar Default">
+                                                <img src="https://ui-avatars.com/api/?name=<%= att.student ? att.student.name.split(' ').join('+') : 'S' %>&background=random" alt="Avatar Default">
                                             <% } %>
                                             </div>
                                         </td>

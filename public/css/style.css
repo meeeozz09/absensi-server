@@ -1,559 +1,659 @@
+/* public/css/style.css - VERSI FINAL DENGAN IMPROVEMENT */
+
 :root {
-    --bg-color: #DEE4AE;
+    --bg-color: #f0f2f5;
     --primary-green: #1EC72C;
     --container-bg: #FFFFFF;
     --text-primary: #212529;
     --text-secondary: #6c757d;
-    --border-color: #dee2e6;
+    --border-color: #e9ecef;
     --font-family: 'Inter', sans-serif;
+    --color-info: #0d6efd;
+    --color-warning: #ffc107;
+    --color-danger: #dc3545;
+    --color-dark-gray: #495057;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Reset & Basic Setup --- */
 * { box-sizing: border-box; }
-body {
-    font-family: var(--font-family);
-    margin: 0;
-    background-color: var(--bg-color);
-    color: var(--text-primary);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
+body { font-family: var(--font-family); margin: 0; background-color: var(--bg-color); color: var(--text-primary); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
-.container {
-    max-width: 1400px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: var(--container-bg);
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-}
+.container { max-width: 1400px; margin: 40px auto; padding: 30px; background-color: var(--container-bg); border-radius: 16px; box-shadow: var(--shadow-md); animation: fadeIn 0.5s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* --- Header --- */
 .main-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px; }
-.title-section h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -1px; }
-.title-section p { margin: 4px 0 0; color: var(--text-secondary); font-size: 16px; }
-.registration-controls { display: flex; align-items: center; gap: 12px; background-color: #f1f3f5; padding: 8px 12px; border-radius: 10px; font-size: 14px; }
+.title-section h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+.title-section p { margin: 4px 0 0; color: var(--text-secondary); }
+.registration-controls { display: flex; align-items: center; gap: 12px; background-color: #f8f9fa; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 10px; font-size: 14px; }
 .registration-controls b { font-weight: 600; }
-#toggle-reg-mode { padding: 8px 16px; border: none; border-radius: 8px; background-color: #495057; color: white; cursor: pointer; font-weight: 500; transition: background-color 0.2s; }
-#toggle-reg-mode.active { background-color: #e74c3c; }
+#toggle-reg-mode { padding: 8px 16px; border: none; border-radius: 8px; background-color: var(--color-dark-gray); color: white; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+#toggle-reg-mode.active { background-color: var(--color-danger); }
+#toggle-reg-mode:hover { transform: translateY(-1px); }
 
-/* --- Main Content Layout --- */
 .content-wrapper { display: grid; grid-template-columns: 2.5fr 1fr; gap: 40px; }
-.attendance-main h2, .manual-attendance-section h2, .report-filter-container h2, .form-section h2, .student-list-section h2 { font-size: 22px; font-weight: 600; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+.attendance-main h2, .manual-attendance-section h2 { font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
 
-/* --- Table Styling --- */
-.table-container {
-    overflow-x: auto; /* Ini membuat kontainer bisa di-scroll horizontal */
-    -webkit-overflow-scrolling: touch; /* Gerakan scroll lebih mulus di iOS */
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-}
-
-table {
-    width: 100%;
-    min-width: 700px; /* INI KUNCINYA! Paksa tabel punya lebar minimum */
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-th, td { padding: 16px 12px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; font-size: 15px; }
-thead th { font-weight: 500; font-size: 13px; text-transform: uppercase; color: var(--text-secondary); border-bottom: 2px solid var(--border-color); }
+.table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; min-width: 750px; border-collapse: collapse; }
+th, td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; font-size: 15px; }
+thead th { font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); background-color: #f8f9fa; }
 tbody tr td:first-child { font-weight: 600; text-align: center; }
 tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background-color: #f8f9fa; }
+.photo-cell img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 2px solid var(--border-color); transition: transform 0.2s; }
+.photo-cell img:hover { transform: scale(3); z-index: 10; position: relative; }
 
-.photo-cell img {
-    width: 80px;  /* Ukuran lebih besar */
-    height: 60px; /* Bentuk persegi panjang agar proporsional */
-    border-radius: 8px; /* Sudut sedikit tumpul (rounded corners), bukan lingkaran penuh */
-    object-fit: cover; /* Pastikan gambar mengisi kotak tanpa distorsi */
-    border: 2px solid var(--border-color);
-    transition: transform 0.2s;
-}
-
-.photo-cell img:hover {
-    transform: scale(2.5); /* Efek zoom saat kursor di atas foto */
-    z-index: 10;
-    position: relative;
-}
-/* --- Status Badges --- */
 .status-badge { padding: 5px 12px; border-radius: 20px; color: white; font-weight: 500; font-size: 12px; text-transform: uppercase; display: inline-block; }
-.status-hadir { background-color: var(--primary-green); } .status-izin { background-color: #3498db; } .status-sakit { background-color: #f1c40f; color: #333; } .status-alfa { background-color: #e74c3c; }
+.status-hadir { background-color: var(--primary-green); } .status-izin { background-color: var(--color-info); } .status-sakit { background-color: var(--color-warning); color: #212529; } .status-alfa { background-color: var(--color-danger); }
 
-/* --- Manual Attendance Section --- */
-.manual-attendance-section p, .report-filter-container p { font-size: 14px; color: var(--text-secondary); margin-bottom: 15px; }
+.manual-attendance-section { background-color: #f8f9fa; padding: 20px; border-radius: 12px; }
+.manual-attendance-section p { font-size: 14px; color: var(--text-secondary); margin-top: 0; }
 #absent-student-list { list-style: none; padding: 0; max-height: 400px; overflow-y: auto; }
-.absent-student-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background-color: #f8f9fa; border-radius: 8px; margin-bottom: 10px; }
-.absent-student-item .student-info span { font-weight: 500; } .absent-student-item .student-info small { display: block; color: #95a5a6; font-size: 12px; }
-.absent-student-item .status-buttons select, .absent-student-item .status-buttons button { padding: 6px; font-size: 12px; margin-left: 8px; border-radius: 5px; border: 1px solid #ced4da; }
-.btn-save-manual { background-color: #495057; color: white; cursor: pointer; border: none; }
-.all-present { text-align: center; padding: 20px; color: var(--primary-green); font-weight: 500; font-size: 15px; }
+.absent-student-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background-color: var(--container-bg); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; }
+.student-info { min-width: 0; flex-grow: 1; margin-right: 10px; }
+.student-info span { font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.student-info small { color: var(--text-secondary); font-size: 12px; }
+.status-buttons { display: flex; align-items: center; flex-shrink: 0; }
+.status-buttons select, .status-buttons button { padding: 6px; font-size: 12px; margin-left: 8px; border-radius: 5px; border: 1px solid #ced4da; }
+.btn-save-manual { background-color: var(--color-info); color: white; cursor: pointer; border: none; font-weight: 500; }
+.all-present { text-align: center; padding: 20px; color: var(--primary-green); font-weight: 500; }
 
-/* --- Footer Actions & Buttons --- */
 .actions-footer { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); }
-.btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s ease-in-out; text-decoration: none; display: inline-block; text-align: center; }
-.btn-footer { background-color: #495057; color: white; }
-.btn-footer:hover { background-color: #343a40; }
+.btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; text-decoration: none; display: inline-block; text-align: center; }
+.btn-footer { background-color: var(--color-dark-gray); color: white; }
+.btn-footer:hover { background-color: #343a40; transform: translateY(-1px); }
 .btn-export { background-color: var(--primary-green); color: white; }
-.btn-export:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(30, 199, 44, 0.4); }
-.btn-export { display: inline-flex; align-items: center; gap: 8px; align-self: flex-end; }
+.btn-export:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(30, 199, 44, 0.3); }
+.user-controls { display: flex; align-items: center; gap: 20px; }
+.user-info { display: flex; align-items: center; gap: 15px; padding-left: 20px; border-left: 1px solid var(--border-color); }
+.user-info span strong { text-transform: capitalize; }
+.btn-logout { background-color: var(--color-danger); color: white; }
+.btn-logout:hover { background-color: #c82333; }
 
-/* --- Forms (Manual Register, Reports) --- */
-.form-section, .report-filter-container { background-color: #f8f9fa; padding: 25px; border-radius: 12px; }
-.filter-form { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
+.modal-overlay.visible { opacity: 1; visibility: visible; }
+.modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 450px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transform: scale(0.95); transition: transform 0.3s; }
+.modal-overlay.visible .modal-content { transform: scale(1); }
+.modal-content h2, .modal-content p { text-align: center; }
+.modal-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: var(--text-secondary); }
 .form-group input { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-family: var(--font-family); font-size: 15px; box-sizing: border-box; }
-.form-section button[type="submit"] { width: 100%; margin-top: 10px; padding: 12px; border-radius: 8px; border: none; background-color: var(--primary-green); color: white; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-.form-section button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(30, 199, 44, 0.4); }
-#response-message { margin-top: 15px; font-weight: 500; text-align: center; }
+.gender-options { display: flex; align-items: center; gap: 25px; margin-top: 10px; }
+.gender-option { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.gender-option label { font-weight: normal; margin: 0; }
+.gender-option input[type="radio"] { accent-color: var(--primary-green); width: 1.2em; height: 1.2em; }
 
-/* --- MODAL STYLING (UNTUK POP-UP) --- */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 1000;
-    opacity: 0; /* Awalnya transparan */
-    visibility: hidden; /* Awalnya tersembunyi */
-    transition: opacity 0.3s, visibility 0.3s;
-}
-.modal-overlay.visible {
-    opacity: 1; /* Jadi terlihat */
-    visibility: visible; /* Jadi bisa diinteraksi */
-}
-.modal-content {
-    background: white; padding: 30px; border-radius: 12px;
-    width: 90%; max-width: 450px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    transform: scale(0.95);
-    transition: transform 0.3s;
-}
-.modal-overlay.visible .modal-content {
-    transform: scale(1); /* Efek muncul membesar */
-}
-.modal-content h2, .modal-content p { text-align: center; }
-.modal-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }
-
-/* ======================================================= */
-/* ==                  RESPONSIVE DESIGN                  == */
-/* ======================================================= */
-
-/* --- Untuk Layar Tablet & HP Besar (di bawah 992px) --- */
-@media (max-width: 992px) {
-    .container {
-        margin: 20px;
-        padding: 20px;
-    }
-
-    .content-wrapper {
-        /* Ubah layout dari 2 kolom menjadi 1 kolom */
-        grid-template-columns: 1fr;
-        gap: 40px;
-    }
-
-    .attendance-main {
-        /* Pindahkan bagian absensi manual ke bawah tabel utama */
-        order: 1;
-    }
-
-    .manual-attendance-section {
-        order: 2;
-    }
-}
-
-
-/* --- Untuk Layar HP (di bawah 768px) --- */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-    
-    .container {
-        margin: 0;
-        padding: 15px;
-        border-radius: 10px;
-    }
-    
-    .main-header {
-        /* Buat header menjadi tumpukan vertikal */
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-    }
-
-    .title-section h1 {
-        font-size: 22px;
-    }
-
-    .registration-controls {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    th, td {
-        padding: 12px 8px;
-        font-size: 14px;
-    }
-
-    thead th {
-        font-size: 12px;
-    }
-
-    .photo-cell img {
-        width: 60px;
-        height: 45px;
-    }
-    
-    .actions-footer {
-        /* Buat tombol footer menjadi tumpukan */
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .btn {
-        width: 100%; /* Tombol jadi full-width */
-    }
-
-    .absent-student-item {
-        /* Buat item absensi manual menjadi tumpukan vertikal */
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .absent-student-item .status-buttons {
-        width: 100%;
-        display: flex;
-    }
-    .absent-student-item .status-buttons select {
-        flex-grow: 1;
-        margin-left: 0;
-    }
-    .absent-student-item .status-buttons button {
-        margin-left: 10px;
-    }
-}
-
-/* --- PERBAIKAN RESPONSIVE EXTRA --- */
-
-/* HP kecil (max-width 576px) */
-@media (max-width: 576px) {
-
-    /* Biarkan halaman tidak mepet pinggir */
-    body {
-        padding: 0;
-        overflow-x: hidden;
-    }
-
-    .container {
-        margin: 0;
-        padding: 12px;
-        width: 100%;
-        border-radius: 0;
-    }
-
-    /* Pastikan semua elemen tidak menyebabkan overflow */
-    .main-header,
-    .title-section,
-    .registration-controls,
-    .content-wrapper,
-    .actions-footer,
-    .manual-attendance-section,
-    .attendance-main {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-    /* Grid pecah full */
-    .content-wrapper {
-        grid-template-columns: 1fr !important;
-        gap: 25px;
-    }
-
-    /* Header lebih rapi */
-    .main-header {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
-
-    /* Registrasi agar tidak mepet dan tidak overflow */
-    .registration-controls {
-        flex-wrap: wrap;
-        width: 100%;
-        padding: 10px;
-        font-size: 13px;
-    }
-
-    #toggle-reg-mode {
-        width: 100%;
-    }
-
-    /* TABLE FIX UTAMA: pastikan tidak kepotong */
-    .table-container {
-        width: 100%;
-        overflow-x: auto;
-    }
-
-    table {
-        min-width: 600px; /* Dari 700px → supaya muat di HP kecil */
-    }
-
-    .photo-cell img {
-        width: 50px;
-        height: 38px;
-    }
-
-    /* Tombol footer full width */
-    .actions-footer {
-        flex-direction: column;
-        gap: 8px;
-        width: 100%;
-    }
-
-    .btn {
-        width: 100%;
-    }
-
-    /* Item absensi manual tidak kepotong */
-    .absent-student-item {
-        width: 100%;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-
-    .absent-student-item .status-buttons {
-        width: 100%;
-    }
-}
-
-/* ======================================================= */
-/* ==          STYLING HALAMAN LOGIN (VERSI MODERN)       == */
-/* ======================================================= */
-
+/* --- STYLING HALAMAN LOGIN (PREMIUM REDESIGN) --- */
 .login-page {
-    /* Background lebih gelap dengan gradient */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('/photos/school-background.jpg');
-    background-size: cover;
-    background-position: center;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh;
     margin: 0;
-    font-family: var(--font-family); /* Pastikan font diterapkan */
+    padding: 20px;
+    font-family: var(--font-family);
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
 }
 
+/* Animated Background Particles */
+.login-page::before {
+    content: '';
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(30, 199, 44, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(30, 199, 44, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(30, 199, 44, 0.05) 0%, transparent 30%);
+    animation: pulseBackground 8s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+.login-page::after {
+    content: '';
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(30, 199, 44, 0.08) 0%, transparent 70%);
+    animation: breathe 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes pulseBackground {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+@keyframes breathe {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+}
+
+/* Floating Particles */
+.login-page .particle {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    background: var(--primary-green);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: float 15s infinite;
+    pointer-events: none;
+}
+
+.login-page .particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 20s; }
+.login-page .particle:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 25s; }
+.login-page .particle:nth-child(3) { left: 30%; animation-delay: 4s; animation-duration: 18s; }
+.login-page .particle:nth-child(4) { left: 40%; animation-delay: 1s; animation-duration: 22s; }
+.login-page .particle:nth-child(5) { left: 60%; animation-delay: 3s; animation-duration: 19s; }
+.login-page .particle:nth-child(6) { left: 70%; animation-delay: 5s; animation-duration: 24s; }
+.login-page .particle:nth-child(7) { left: 80%; animation-delay: 2s; animation-duration: 21s; }
+.login-page .particle:nth-child(8) { left: 90%; animation-delay: 4s; animation-duration: 17s; }
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.3;
+    }
+    90% {
+        opacity: 0.3;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Login Box - Glassmorphism Premium */
 .login-box {
-    width: 420px;
-    padding: 40px;
-    /* Efek Frosted Glass (transparan + blur) */
-    background-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px); /* Untuk Safari */
-    
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
-    
-    /* Hapus efek 3D rotate, ganti dengan transisi halus */
-    transition: transform 0.3s ease;
-}
-
-/* Efek sedikit membesar saat di-hover */
-.login-box:hover {
-    transform: scale(1.02);
-}
-
-.login-header {
+    width: 100%;
+    max-width: 420px;
+    padding: 40px 35px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 0 80px rgba(30, 199, 44, 0.1);
     text-align: center;
+    z-index: 10;
+    position: relative;
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.login-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.03),
+        transparent
+    );
+    animation: shimmer 3s infinite;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 200%; }
+}
+
+/* Logo/Icon Area */
+.login-header {
     margin-bottom: 35px;
-    color: var(--container-bg); /* Warna teks jadi putih agar kontras */
+    position: relative;
+}
+
+.login-header::before {
+    content: '';
+    display: block;
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, var(--primary-green) 0%, #15a323 100%);
+    border-radius: 20px;
+    box-shadow: 
+        0 10px 30px rgba(30, 199, 44, 0.4),
+        0 0 0 8px rgba(30, 199, 44, 0.1);
+    animation: iconPulse 2s ease-in-out infinite;
+    position: relative;
+}
+
+.login-header::after {
+    content: '👤';
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 32px;
+    filter: grayscale(1) brightness(10);
+}
+
+@keyframes iconPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(30, 199, 44, 0.4), 0 0 0 8px rgba(30, 199, 44, 0.1); }
+    50% { transform: scale(1.02); box-shadow: 0 15px 40px rgba(30, 199, 44, 0.5), 0 0 0 12px rgba(30, 199, 44, 0.15); }
 }
 
 .login-header h2 {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 400;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.8;
+    letter-spacing: 3px;
+    margin: 0;
 }
 
 .login-header h1 {
-    margin: 5px 0 0;
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 700;
+    color: #fff;
+    margin: 8px 0 0 0;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-/* Penataan ulang form group agar label di atas input */
+/* Form Groups */
 .login-box .form-group {
+    text-align: left;
+    margin-bottom: 24px;
     position: relative;
-    margin-bottom: 25px;
 }
 
 .login-box .form-group label {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
-    color: #DDDDDD;
-    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 10px;
     display: block;
+    letter-spacing: 0.5px;
+    transition: color 0.3s;
+}
+
+.login-box .form-group:focus-within label {
+    color: var(--primary-green);
 }
 
 .login-box .form-group input {
     width: 100%;
-    padding: 12px 15px;
-    background-color: rgba(240, 240, 240, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    color: var(--container-bg); /* Warna teks input jadi putih */
-    font-size: 16px;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 15px;
     font-family: var(--font-family);
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
 }
 
 .login-box .form-group input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.3);
 }
 
 .login-box .form-group input:focus {
     outline: none;
-    background-color: rgba(240, 240, 240, 0.3);
+    background: rgba(255, 255, 255, 0.08);
     border-color: var(--primary-green);
-    box-shadow: 0 0 0 3px rgba(30, 199, 44, 0.3);
+    box-shadow: 
+        0 0 0 4px rgba(30, 199, 44, 0.15),
+        0 4px 20px rgba(30, 199, 44, 0.2);
+    transform: translateY(-2px);
 }
 
-
-.btn-login {
-    width: 100%;
-    margin-top: 15px;
-    padding: 15px;
-    border-radius: 10px;
-    border: none;
-    background-color: var(--primary-green);
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
+.login-box .form-group input:hover:not(:focus) {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
 }
 
-.btn-login:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(30, 199, 44, 0.6);
-}
-
-.btn-login:active {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(30, 199, 44, 0.6);
-}
-
-
-#error-message {
-    margin-top: 20px;
-    background-color: rgba(231, 76, 60, 0.2);
-    color: #e74c3c;
-    border: 1px solid rgba(231, 76, 60, 0.5);
-    padding: 10px;
-    border-radius: 8px;
-    font-weight: 500;
-    text-align: center;
-    font-size: 14px;
-    /* Sembunyikan jika kosong */
-    display: none; 
-}
-
-#error-message:not(:empty) {
-    display: block; /* Tampilkan jika ada isi */
-}
-
+/* Password Toggle */
 .password-group {
     position: relative;
 }
 
 .toggle-password {
     position: absolute;
-    right: 15px;
+    right: 16px;
     top: 50%;
-    /* Penyesuaian agar ikon pas di tengah setelah ada label */
-    transform: translateY( calc(-50% + 14px) ); 
+    transform: translateY(8px);
     cursor: pointer;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s;
+    padding: 5px;
+    border-radius: 6px;
+}
+
+.toggle-password:hover {
+    color: var(--primary-green);
+    background: rgba(30, 199, 44, 0.1);
 }
 
 .toggle-password svg {
     width: 20px;
     height: 20px;
+    display: block;
 }
 
-/* --- User Controls di Header --- */
-.user-controls {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding-left: 20px;
-    border-left: 1px solid var(--border-color);
-}
-
-.user-info span strong {
-    text-transform: capitalize;
-}
-
-.btn-logout {
-    background-color: #dc3545;
-    color: white;
-}
-
-.btn-logout:hover {
-    background-color: #c82333;
-}
-
-/* Penyesuaian responsive untuk header baru */
-@media (max-width: 992px) {
-    .main-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-    }
-    .user-controls {
-        width: 100%;
-        justify-content: space-between;
-    }
-    .user-info {
-        padding-left: 0;
-        border-left: none;
-    }
-}
-
-.gender-options {
-    display: flex;
-    align-items: center;
-    gap: 25px; /* Jarak antara 'Laki-laki' dan 'Perempuan' */
+/* Login Button */
+.btn-login {
+    width: 100%;
     margin-top: 10px;
-}
-/* Styling untuk setiap pilihan (radio button + label) */
-.gender-option {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Jarak antara radio button dan teksnya */
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, var(--primary-green) 0%, #15a323 100%);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(30, 199, 44, 0.3);
 }
-.gender-option label {
-    font-weight: normal; /* Override style label default */
-    margin: 0; /* Hapus margin default dari label */
+
+.btn-login::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: left 0.5s;
 }
-.gender-option input[type="radio"] {
-    /* (Opsional) Style custom untuk radio button jika diinginkan */
-    accent-color: var(--primary-green); /* Mengubah warna centang radio button */
-    width: 1.2em;
-    height: 1.2em;
+
+.btn-login:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+        0 8px 25px rgba(30, 199, 44, 0.5),
+        0 0 40px rgba(30, 199, 44, 0.3);
+}
+
+.btn-login:hover::before {
+    left: 100%;
+}
+
+.btn-login:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(30, 199, 44, 0.4);
+}
+
+/* Error Message */
+#error-message {
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    border-radius: 10px;
+    color: #ff6b7a;
+    font-weight: 500;
+    font-size: 14px;
+    display: none;
+    animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+#error-message:not(:empty) {
+    display: block;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Footer Text (if any) */
+.login-footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.login-footer a {
+    color: var(--primary-green);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.login-footer a:hover {
+    color: #25e633;
+    text-decoration: underline;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) { .container { margin: 20px; padding: 20px; } .content-wrapper { grid-template-columns: 1fr; gap: 30px; } .attendance-main { order: 1; } .manual-attendance-section { order: 2; } }
+
+@media (max-width: 768px) { 
+    .container { margin: 10px; padding: 15px; } 
+    .main-header { flex-direction: column; align-items: flex-start; gap: 20px; } 
+    .title-section h1 { font-size: 22px; } 
+    .registration-controls { width: 100%; justify-content: space-between; } 
+    th, td { padding: 12px 8px; font-size: 14px; } 
+    thead th { font-size: 11px; } 
+    .photo-cell img { width: 50px; height: 50px; } 
+    .actions-footer { flex-direction: column; gap: 10px; } 
+    .btn { width: 100%; } 
+    .user-controls { flex-direction: column; width: 100%; gap: 15px; } 
+    .user-info { border-left: none; padding-left: 0; width: 100%; justify-content: space-between; } 
+    .absent-student-item { flex-direction: column; align-items: stretch; gap: 10px; } 
+    .absent-student-item .status-buttons { width: 100%; display: flex; } 
+    .absent-student-item .status-buttons select { flex-grow: 1; margin-left: 0; } 
+    .absent-student-item .status-buttons button { margin-left: 10px; }
+}
+
+/* Login Page Mobile Responsive - IMPROVED */
+@media (max-width: 480px) {
+    .login-page {
+        padding: 16px;
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+
+    .login-page::after {
+        width: 300px;
+        height: 300px;
+    }
+
+    .login-box {
+        padding: 30px 24px;
+        border-radius: 20px;
+        max-width: 100%;
+    }
+
+    .login-header::before {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        margin-bottom: 16px;
+    }
+
+    .login-header::after {
+        top: 16px;
+        font-size: 28px;
+    }
+
+    .login-header h2 {
+        font-size: 11px;
+        letter-spacing: 2px;
+    }
+
+    .login-header h1 {
+        font-size: 24px;
+    }
+
+    .login-header {
+        margin-bottom: 28px;
+    }
+
+    .login-box .form-group {
+        margin-bottom: 20px;
+    }
+
+    .login-box .form-group label {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+
+    .login-box .form-group input {
+        padding: 14px 16px;
+        font-size: 16px; /* Prevents zoom on iOS */
+        border-radius: 10px;
+    }
+
+    .toggle-password {
+        right: 14px;
+    }
+
+    .btn-login {
+        padding: 14px 20px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
+
+    #error-message {
+        padding: 10px 14px;
+        font-size: 13px;
+        margin-top: 16px;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+    .login-page {
+        padding: 12px;
+        padding-top: 30px;
+    }
+
+    .login-box {
+        padding: 24px 20px;
+    }
+
+    .login-header::before {
+        width: 50px;
+        height: 50px;
+    }
+
+    .login-header::after {
+        top: 12px;
+        font-size: 24px;
+    }
+
+    .login-header h1 {
+        font-size: 22px;
+    }
+
+    .login-box .form-group input {
+        padding: 12px 14px;
+    }
+
+    .btn-login {
+        padding: 12px 18px;
+    }
+}
+
+/* Landscape mode on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .login-page {
+        padding: 15px;
+        align-items: center;
+    }
+
+    .login-box {
+        padding: 20px 30px;
+    }
+
+    .login-header {
+        margin-bottom: 15px;
+    }
+
+    .login-header::before {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 10px;
+    }
+
+    .login-header::after {
+        top: 8px;
+        font-size: 20px;
+    }
+
+    .login-header h1 {
+        font-size: 20px;
+        margin-top: 5px;
+    }
+
+    .login-header h2 {
+        font-size: 10px;
+    }
+
+    .login-box .form-group {
+        margin-bottom: 12px;
+    }
+
+    .login-box .form-group input {
+        padding: 10px 14px;
+    }
+
+    .btn-login {
+        padding: 10px 20px;
+        margin-top: 5px;
+    }
+}
+
+/* Safe area for notched phones */
+@supports (padding: max(0px)) {
+    .login-page {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
 }
