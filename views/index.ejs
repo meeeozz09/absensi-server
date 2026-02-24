@@ -9,29 +9,43 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-
-    <div class="background-layer"></div>
+<!-- SIMPAN TANGGAL DARI SERVER DI SINI -->
+<body data-current-date="<%= currentDate %>">
 
     <div class="container">
         <header class="main-header">
             <div class="title-section">
                 <h1>ABSENSI SISWA KELAS 6</h1>
-                <p id="current-date">Tanggal akan diupdate oleh JS</p>
+                <p id="current-date">Memuat tanggal...</p>
             </div>
-            <div class="registration-controls">
-                <span>Mode Registrasi: <b id="reg-status">OFF</b></span>
-                <button id="toggle-reg-mode" class="btn btn-secondary">Aktifkan</button>
+            
+            <div class="header-controls">
+                <!-- PEMILIH TANGGAL DIPINDAH KE SINI AGAR RAPI -->
+                <div class="date-picker-wrapper">
+                    <label for="date-picker">Tampilkan Tanggal:</label>
+                    <input type="date" id="date-picker">
+                </div>
+                
+                <div class="user-controls">
+                    <div class="registration-controls">
+                        <span>Mode Reg: <b id="reg-status">OFF</b></span>
+                        <button id="toggle-reg-mode" class="btn btn-secondary">Aktifkan</button>
+                    </div>
+                    <div class="user-info">
+                        <% if (user) { %>
+                            <span>Hi, <strong><%= user.username %></strong>!</span>
+                            <button id="logout-button" class="btn btn-logout">Logout</button>
+                        <% } else { %>
+                            <a href="/login" class="btn btn-logout">Login</a>
+                        <% } %>
+                    </div>
+                </div>
             </div>
-            <div class="user-info">
-            <span>Selamat datang, <strong><%= user.username %></strong>!</span>
-            <button id="logout-button" class="btn btn-logout">Logout</button>
-        </div>
         </header>
 
         <div class="content-wrapper">
             <main class="attendance-main">
-                <h2>Kehadiran Hari Ini</h2>
+                <h2 id="attendance-title">Kehadiran</h2>
                 <div class="table-container">
                     <table id="attendance-table">
                         <thead>
@@ -45,28 +59,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <% if (attendances.length > 0) { %>
-                                <% attendances.forEach((att, index) => { %>
-                                    <tr id="att-<%= att._id %>">
-                                        <td><%= index + 1 %></td>
-                                        <td><%= att.student ? att.student.name : 'Siswa Dihapus' %></td>
-                                        <td><%= att.student ? att.student.studentId : '-' %></td>
-                                        <td><%= att.status === 'HADIR' ? new Date(att.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-' %></td>
-                                        <td><span class="status-badge status-<%= att.status.toLowerCase() %>"><%= att.status %></span></td>
-                                        <td>
-                                            <div class="photo-cell">
-                                            <% if (att.photoUrl && att.photoUrl !== '/photos/default.png') { %>
-                                                <img src="<%= att.photoUrl %>" alt="Foto Absensi">
-                                            <% } else { %>
-                                                <img src="https://ui-avatars.com/api/?name=<%= att.student ? att.student.name.split(' ').join('+') : 'S' %>&background=random" alt="Avatar Default">
-                                            <% } %>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            <% } else { %>
-                                <tr id="no-data"><td colspan="6">Belum ada data absensi hari ini.</td></tr>
-                            <% } %>
+                            <!-- Dibiarkan kosong, akan diisi oleh dashboard.js -->
+                            <tr id="no-data"><td colspan="6" style="text-align:center;">Memuat data absensi...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -74,29 +68,10 @@
             
             <aside class="manual-attendance-section">
                 <h2>Absensi Manual</h2>
-                <p>Siswa yang belum tercatat kehadirannya hari ini.</p>
+                <p id="manual-attendance-subtitle">Siswa yang belum tercatat kehadirannya.</p>
                 <ul id="absent-student-list">
-                    <% if (absentStudents.length > 0) { %>
-                        <% absentStudents.forEach(student => { %>
-                            <li class="absent-student-item" id="absent-<%= student._id %>">
-                                <div class="student-info">
-                                    <span><%= student.name %></span>
-                                    <small><%= student.studentId %></small>
-                                </div>
-                                <div class="status-buttons">
-                                    <select>
-                                        <option value="">-- Status --</option>
-                                        <option value="IZIN">Izin</option>
-                                        <option value="SAKIT">Sakit</option>
-                                        <option value="ALFA">Alfa</option>
-                                    </select>
-                                    <button class="btn-save-manual" data-studentid="<%= student._id %>">Simpan</button>
-                                </div>
-                            </li>
-                        <% }) %>
-                    <% } else { %>
-                        <li class="all-present">Semua siswa sudah tercatat kehadirannya!</li>
-                    <% } %>
+                    <!-- Dibiarkan kosong, akan diisi oleh dashboard.js -->
+                    <li class="loading">Memuat daftar siswa...</li>
                 </ul>
             </aside>
         </div>
@@ -104,10 +79,11 @@
         <footer class="actions-footer">
             <a href="/register" class="btn btn-footer">Kelola Siswa</a>
             <a href="/reports" class="btn btn-footer">Laporan</a>
-            <button id="export-button" class="btn btn-export">Export Hari Ini</button>
+            <button id="export-button" class="btn btn-export">Export Data Terpilih</button>
         </footer>
     </div>
 
+    <!-- Modal Registrasi (tidak berubah, tetap di luar .container) -->
     <div id="registration-modal" class="modal-overlay"> 
         <div class="modal-content">
             <h2>Registrasi Kartu Baru</h2>

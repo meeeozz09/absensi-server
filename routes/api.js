@@ -142,14 +142,15 @@ router.post('/attendance/manual', async (req, res) => {
 // Endpoint untuk mendapatkan siswa yang belum absen hari ini
 router.get('/students/absent', async (req, res) => {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dateQuery = req.query.date;
+        const selectedDate = dateQuery ? new Date(dateQuery) : new Date();
+        const startOfDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+        const endOfDay = new Date(startOfDay);
+        endOfDay.setDate(startOfDay.getDate() + 1);
         const attendedStudentIds = await Attendance.find(
-            { timestamp: { $gte: today, $lt: tomorrow } }, 'student'
+            { timestamp: { $gte: startOfDay, $lt: endOfDay } }, 'student'
         ).distinct('student');
-        const absentStudents = await Student.find({ _id: { $nin: attendedStudentIds } });
+        const absentStudents = await Student.find({ _id: { $nin: attendedStudentIds } }).sort({ name: 1 });
         res.status(200).json({ success: true, data: absentStudents });
     } catch (error) {
         console.error('Error fetching absent students:', error);
@@ -233,6 +234,41 @@ router.get('/export', async (req, res) => {
         res.status(500).send('Terjadi kesalahan saat membuat file Excel. Cek log server.');
     }
 });
+
+router.get('/dashboard-data', async (req, res) => {
+    try {
+        const dateQuery = req.query.date;
+        if (!dateQuery) {
+            return res.status(400).json({ success: false, message: "Parameter tanggal dibutuhkan." });
+        }
+        
+        const selectedDate = new Date(dateQuery);
+        const startOfDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+        const endOfDay = new Date(startOfDay);
+        endOfDay.setDate(startOfDay.getDate() + 1);
+
+        const attendancesRaw = await Attendance.find({
+            timestamp: { $gte: startOfDay, $lt: endOfDay }
+        }).sort({ timestamp: -1 }).populate('student');
+
+        const attendances = attendancesRaw.filter(att => att.student != null);
+        const attendedStudentIds = attendances.map(att => att.student._id);
+        const absentStudents = await Student.find({ _id: { $nin: attendedStudentIds } }).sort({ name: 1 });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                attendances: attendances,
+                absentStudents: absentStudents
+            }
+        });
+
+    } catch (error) {
+        console.error("❌ Gagal mengambil data dashboard:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
 
 
 export default router;

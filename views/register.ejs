@@ -7,40 +7,39 @@
     <title><%= title %></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div class="background-layer"></div>
-
     <div class="container">
         <header class="main-header">
             <div class="title-section">
                 <h1>Kelola & Registrasi Siswa</h1>
                 <p>Tambah siswa baru atau lihat daftar siswa yang sudah terdaftar.</p>
             </div>
-            <a href="/" class="btn btn-secondary">Kembali ke Dashboard</a>
+            <a href="/" class="btn btn-secondary">← Kembali ke Dashboard</a>
         </header>
 
-        <main class="content-wrapper">
-            <!-- Form Registrasi Manual -->
+        <main class="register-content">
+
+            <!-- ===== Form Registrasi ===== -->
             <div class="form-section">
                 <h2>Tambah Siswa Baru</h2>
                 <form id="manual-register-form">
                     <div class="form-group">
-                        <label for="reg-uid">UID Kartu RFID:</label>
+                        <label for="reg-uid">UID Kartu RFID</label>
                         <input type="text" id="reg-uid" name="uid" required placeholder="Contoh: 1a2b3c4d">
                     </div>
                     <div class="form-group">
-                        <label for="reg-name">Nama Siswa:</label>
+                        <label for="reg-name">Nama Siswa</label>
                         <input type="text" id="reg-name" name="name" required placeholder="Masukkan nama lengkap siswa">
                     </div>
                     <div class="form-group">
-                        <label for="reg-student-id">ID Siswa (NISN):</label>
+                        <label for="reg-student-id">ID Siswa (NIS)</label>
                         <input type="text" id="reg-student-id" name="studentId" required placeholder="Masukkan ID unik siswa">
                     </div>
                     <div class="form-group">
-                        <label>Jenis Kelamin:</label>
+                        <label>Jenis Kelamin</label>
                         <div class="gender-options">
                             <div class="gender-option">
                                 <input type="radio" id="manual-gender-male" name="gender" value="Laki-laki" required>
@@ -52,41 +51,64 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Daftarkan Siswa</button>
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding: 13px;">
+                        Daftarkan Siswa
+                    </button>
                     <div id="response-message"></div>
                 </form>
             </div>
 
-            <!-- Tabel Daftar Siswa Terdaftar -->
+            <!-- ===== Tabel Siswa Terdaftar (dengan scroll) ===== -->
             <aside class="student-list-section">
-                <h2>Siswa Terdaftar</h2>
+                <h2>
+                    Siswa Terdaftar
+                    <span style="font-size:13px; font-weight:500; color:var(--text-secondary);">
+                        (<%= students.length %> siswa)
+                    </span>
+                </h2>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
+                                <th style="width:40px; text-align:center;">#</th>
                                 <th>Nama</th>
-                                <th>NIS</th>
+                                <th>NIS / NISN</th>
                                 <th>UID Kartu</th>
                             </tr>
                         </thead>
                         <tbody>
                             <% if (students.length > 0) { %>
-                                <% students.forEach(student => { %>
+                                <% students.forEach((student, index) => { %>
                                     <tr>
-                                        <td><%= student.name %></td>
-                                        <td><%= student.studentId %></td>
-                                        <td><%= student.uid %></td>
+                                        <td style="text-align:center; color:var(--text-secondary); font-weight:600;">
+                                            <%= index + 1 %>
+                                        </td>
+                                        <td style="font-weight:600;"><%= student.name %></td>
+                                        <td style="color:var(--text-secondary);"><%= student.studentId %></td>
+                                        <td>
+                                            <code style="
+                                                background: var(--input-bg);
+                                                padding: 3px 8px;
+                                                border-radius: 6px;
+                                                font-size: 12px;
+                                                color: var(--color-info);
+                                                border: 1px solid var(--border-color);
+                                            "><%= student.uid %></code>
+                                        </td>
                                     </tr>
                                 <% }) %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="3">Belum ada siswa yang terdaftar.</td>
+                                    <td colspan="4" style="text-align:center; padding: 40px; color: var(--text-secondary); font-style: italic;">
+                                        Belum ada siswa yang terdaftar.
+                                    </td>
                                 </tr>
                             <% } %>
                         </tbody>
                     </table>
                 </div>
             </aside>
+
         </main>
     </div>
 
@@ -96,11 +118,10 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
+            const data = Object.fromEntries(new FormData(form).entries());
 
-            messageDiv.textContent = 'Mendaftarkan...';
-            messageDiv.style.color = 'blue';
+            messageDiv.textContent = '⏳ Mendaftarkan siswa...';
+            messageDiv.className = 'loading';
 
             try {
                 const response = await fetch('/api/students', {
@@ -111,18 +132,17 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    messageDiv.textContent = `Berhasil! Siswa "${result.data.name}" telah didaftarkan. Halaman akan dimuat ulang.`;
-                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = `✅ Berhasil! "${result.data.name}" telah didaftarkan. Memuat ulang...`;
+                    messageDiv.className = 'success';
                     form.reset();
                     setTimeout(() => window.location.reload(), 2000);
                 } else {
-                    messageDiv.textContent = `Gagal: ${result.message}`;
-                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = `❌ Gagal: ${result.message}`;
+                    messageDiv.className = 'error';
                 }
             } catch (error) {
-                console.error('Error:', error);
-                messageDiv.textContent = 'Terjadi kesalahan koneksi.';
-                messageDiv.style.color = 'red';
+                messageDiv.textContent = '❌ Terjadi kesalahan koneksi.';
+                messageDiv.className = 'error';
             }
         });
     </script>

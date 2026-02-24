@@ -1,3 +1,5 @@
+// server.js - VERSI FINAL DENGAN PENANGANAN PARAMETER TANGGAL
+
 import 'dotenv/config';
 import express from 'express';
 import http from 'http';
@@ -10,12 +12,14 @@ import apiRoutes from './routes/api.js';
 import authRoutes from './routes/auth.js'; 
 import { protect } from './middleware/authMiddleware.js';
 
+// Setup dasar
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
+// --- Konfigurasi Middleware Express ---
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.json({ limit: '10mb' }));
@@ -41,7 +45,11 @@ function broadcast(data) {
 }
 app.set('broadcast', broadcast);
 
-// Rute untuk menampilkan halaman login
+// ==========================================================
+// ==                  DEFINISI RUTE (ROUTES)                ==
+// ==========================================================
+
+// --- 1. RUTE PUBLIK ---
 app.get('/login', (req, res) => {
     if (req.cookies.token) {
         return res.redirect('/');
@@ -49,39 +57,27 @@ app.get('/login', (req, res) => {
     res.render('login', { title: 'Login Sistem Absensi' });
 });
 
+// --- 2. RUTE API ---
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 
-// Rute Halaman Utama (Dashboard)
-app.get('/', protect, async (req, res) => {
-    try {
-        const Attendance = (await import('./models/Attendance.js')).default;
-        const Student = (await import('./models/Student.js')).default;
+// --- 3. RUTE YANG DILINDUNGI ---
 
-        const now = new Date();
-        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const endOfDay = new Date(startOfDay);
-        endOfDay.setDate(startOfDay.getDate() + 1);
+// Rute Halaman Utama (Dashboard) - DENGAN PERBAIKAN
+app.get('/', protect, (req, res) => {
+    // Ambil tanggal dari query URL (?date=YYYY-MM-DD)
+    const dateQuery = req.query.date;
+    
+    // Jika ada tanggal di query, gunakan itu. Jika tidak, gunakan string kosong.
+    // JavaScript di frontend akan menanganinya jika kosong (default ke hari ini).
+    const currentDate = dateQuery || ""; 
 
-        const attendancesTodayRaw = await Attendance.find({
-            timestamp: { $gte: startOfDay, $lt: endOfDay }
-        }).sort({ timestamp: -1 }).populate('student');
-
-        const attendancesToday = attendancesTodayRaw.filter(att => att.student != null);
-        
-        const attendedStudentIds = attendancesToday.map(att => att.student._id);
-        const absentStudents = await Student.find({ _id: { $nin: attendedStudentIds } }).sort({ name: 1 });
-
-        res.render('index', { 
-            title: 'Dashboard Absensi Hari Ini', 
-            attendances: attendancesToday,
-            absentStudents: absentStudents,
-            user: req.user 
-        });
-    } catch (error) {
-        console.error("❌ Gagal mengambil data awal:", error);
-        res.render('index', { title: 'Dashboard Absensi', attendances: [], absentStudents: [], user: req.user });
-    }
+    res.render('index', { 
+        title: 'Dashboard Absensi',
+        user: req.user,
+        // Kirim tanggal yang dipilih (atau string kosong) ke EJS
+        currentDate: currentDate 
+    });
 });
 
 // Rute Halaman Registrasi Siswa
@@ -102,6 +98,7 @@ app.get('/reports', protect, (req, res) => {
 });
 
 
+// --- Menjalankan Server ---
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`🚀 Server berjalan di http://localhost:${PORT}`);

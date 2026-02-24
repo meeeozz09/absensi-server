@@ -1,222 +1,740 @@
-/* public/css/style.css - VERSI FIX RESPONSIVE & LOGIN LIGHT MODE */
-
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
 :root {
     --bg-color: #f0f2f5;
     --primary-green: #1EC72C;
     --primary-green-dark: #15a323;
+    --primary-green-light: rgba(30, 199, 44, 0.10);
     --container-bg: #FFFFFF;
-    --text-primary: #212529;
+    --text-primary: #1a1d23;
     --text-secondary: #6c757d;
-    --border-color: #dee2e6;
+    --border-color: #e9ecef;
     --input-bg: #f8f9fa;
-    --font-family: 'Inter', sans-serif;
+    --font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     --color-info: #0d6efd;
-    --color-warning: #ffc107;
-    --color-danger: #dc3545;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
     --color-dark-gray: #495057;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
 }
 
-* { box-sizing: border-box; }
-body { 
-    font-family: var(--font-family); 
-    margin: 0; 
-    background-color: var(--bg-color); 
-    color: var(--text-primary); 
-    -webkit-font-smoothing: antialiased; 
-    -moz-osx-font-smoothing: grayscale; 
-}
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
 
-/* --- DASHBOARD STYLES --- */
-
-/* Fix Container agar tidak kepotong di mobile */
-.container { 
-    width: 100%; /* Pastikan lebar penuh */
-    max-width: 1400px; 
-    margin: 40px auto; 
-    padding: 30px; 
-    background-color: var(--container-bg); 
-    border-radius: 16px; 
-    box-shadow: var(--shadow-md); 
-    animation: fadeIn 0.5s ease-out; 
-}
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-.main-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px; flex-wrap: wrap; gap: 20px; }
-.title-section h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); }
-.title-section p { margin: 4px 0 0; color: var(--text-secondary); }
-
-.registration-controls { display: flex; align-items: center; gap: 12px; background-color: #f8f9fa; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 10px; font-size: 14px; flex-wrap: wrap; }
-.registration-controls b { font-weight: 600; }
-#toggle-reg-mode { padding: 8px 16px; border: none; border-radius: 8px; background-color: var(--color-dark-gray); color: white; cursor: pointer; font-weight: 500; transition: all 0.2s; white-space: nowrap; }
-#toggle-reg-mode.active { background-color: var(--color-danger); }
-#toggle-reg-mode:hover { transform: translateY(-1px); }
-
-.content-wrapper { display: grid; grid-template-columns: 2.5fr 1fr; gap: 40px; }
-.attendance-main h2, .manual-attendance-section h2 { font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); color: var(--text-primary); }
-
-/* Table Responsive Fix */
-.table-container { 
-    width: 100%; 
-    overflow-x: auto; 
-    -webkit-overflow-scrolling: touch; 
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
-table { width: 100%; min-width: 750px; border-collapse: collapse; }
-th, td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; font-size: 15px; }
-thead th { font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); background-color: #f8f9fa; border-top: none; }
-tbody tr td:first-child { font-weight: 600; text-align: center; color: var(--text-secondary); }
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover { background-color: #f8f9fa; }
-
-.photo-cell img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color); transition: transform 0.2s; background-color: #eee; }
-.photo-cell img:hover { transform: scale(2.5); z-index: 100; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: zoom-in; }
-
-.status-badge { padding: 6px 14px; border-radius: 20px; color: white; font-weight: 600; font-size: 11px; text-transform: uppercase; display: inline-block; letter-spacing: 0.5px; }
-.status-hadir { background-color: var(--primary-green); box-shadow: 0 2px 4px rgba(30, 199, 44, 0.2); } 
-.status-izin { background-color: var(--color-info); box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2); } 
-.status-sakit { background-color: var(--color-warning); color: #212529; box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2); } 
-.status-alfa { background-color: var(--color-danger); box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2); }
-
-.manual-attendance-section { background-color: white; padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
-.manual-attendance-section p { font-size: 14px; color: var(--text-secondary); margin-top: 0; }
-#absent-student-list { list-style: none; padding: 0; max-height: 500px; overflow-y: auto; }
-.absent-student-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background-color: #fff; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; transition: border-color 0.2s; }
-.absent-student-item:hover { border-color: var(--primary-green); }
-.student-info { min-width: 0; flex-grow: 1; margin-right: 10px; }
-.student-info span { font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary); }
-.student-info small { color: var(--text-secondary); font-size: 12px; }
-.status-buttons { display: flex; align-items: center; flex-shrink: 0; }
-.status-buttons select, .status-buttons button { padding: 8px; font-size: 13px; margin-left: 8px; border-radius: 6px; border: 1px solid var(--border-color); background-color: white; }
-.status-buttons select:focus { border-color: var(--primary-green); outline: none; }
-.btn-save-manual { background-color: var(--color-info) !important; color: white !important; cursor: pointer; border: none !important; font-weight: 500; }
-.btn-save-manual:hover { background-color: #0b5ed7 !important; }
-.all-present { text-align: center; padding: 30px; color: var(--text-secondary); font-style: italic; background: #f8f9fa; border-radius: 8px; border: 1px dashed var(--border-color); }
-
-.actions-footer { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); flex-wrap: wrap; }
-.btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; white-space: nowrap; }
-.btn-footer { background-color: white; color: var(--text-secondary); border: 1px solid var(--border-color); }
-.btn-footer:hover { background-color: #f8f9fa; color: var(--text-primary); border-color: #cdd2d6; }
-.btn-export { background-color: var(--primary-green); color: white; border: 1px solid transparent; box-shadow: 0 4px 6px rgba(30, 199, 44, 0.2); }
-.btn-export:hover { background-color: var(--primary-green-dark); transform: translateY(-1px); }
-.user-controls { display: flex; align-items: center; gap: 20px; }
-.user-info { display: flex; align-items: center; gap: 15px; padding-left: 20px; border-left: 1px solid var(--border-color); }
-.user-info span strong { text-transform: capitalize; color: var(--text-primary); }
-.btn-logout { background-color: #fff0f1; color: var(--color-danger); border: 1px solid rgba(220, 53, 69, 0.2); }
-.btn-logout:hover { background-color: var(--color-danger); color: white; border-color: var(--color-danger); }
-
-/* Modal Styles */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; }
-.modal-overlay.visible { opacity: 1; visibility: visible; }
-.modal-content { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); transform: scale(0.95); transition: transform 0.3s; }
-.modal-overlay.visible .modal-content { transform: scale(1); }
-.modal-content h2 { margin-top: 0; color: var(--text-primary); }
-.modal-content p { color: var(--text-secondary); }
-.modal-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }
-.form-group { margin-bottom: 20px; }
-.form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: var(--text-primary); }
-.form-group input { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-family: var(--font-family); font-size: 15px; box-sizing: border-box; background-color: var(--input-bg); transition: border-color 0.2s; }
-.form-group input:focus { border-color: var(--primary-green); outline: none; background-color: white; }
-.gender-options { display: flex; align-items: center; gap: 25px; margin-top: 10px; }
-.gender-option { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.gender-option label { font-weight: normal; margin: 0; color: var(--text-secondary); cursor: pointer; }
-.gender-option input[type="radio"] { accent-color: var(--primary-green); width: 1.2em; height: 1.2em; cursor: pointer; }
-
-/* --- STYLING HALAMAN LOGIN (LIGHT MODE REDESIGN) --- */
-/* Mengganti tema gelap/space menjadi Clean Light Theme */
-
-.login-page {
-    background-color: #f0f2f5;
-    background-image: 
-        radial-gradient(at 0% 0%, hsla(126,38%,90%,1) 0, transparent 50%), 
-        radial-gradient(at 100% 100%, hsla(126,38%,94%,1) 0, transparent 50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+body {
     font-family: var(--font-family);
-    position: relative;
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+}
+
+/* ============================================================
+   DASHBOARD CONTAINER
+   ============================================================ */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 32px;
+    background-color: var(--container-bg);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.title-section h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+}
+
+.title-section p {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.header-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.registration-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    flex-wrap: wrap;
+}
+
+.registration-controls b { font-weight: 600; }
+
+#toggle-reg-mode {
+    padding: 8px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-dark-gray);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    font-family: var(--font-family);
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+#toggle-reg-mode.active { background-color: var(--color-danger); }
+#toggle-reg-mode:hover { filter: brightness(1.12); transform: translateY(-1px); }
+
+.date-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+}
+
+.date-picker-wrapper label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+#date-picker {
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family);
+    font-size: 14px;
+    background: white;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.user-controls { display: flex; align-items: center; gap: 16px; }
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 16px;
+    border-left: 1px solid var(--border-color);
+}
+
+.user-info span strong { text-transform: capitalize; color: var(--text-primary); }
+
+/* ============================================================
+   CONTENT LAYOUT — DASHBOARD
+   ============================================================ */
+.content-wrapper {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    gap: 32px;
+}
+
+.attendance-main h2,
+.manual-attendance-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+/* ============================================================
+   TABLE — DASHBOARD
+   ============================================================ */
+.table-container {
+    width: 100%;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
     overflow: hidden;
 }
 
-/* Login Box - Clean White Card */
+table { width: 100%; border-collapse: collapse; }
+
+th, td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+thead th {
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+    background-color: var(--input-bg);
+}
+
+tbody tr td:first-child {
+    font-weight: 600;
+    text-align: center;
+    color: var(--text-secondary);
+    width: 50px;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background-color: #fafbfc; }
+
+.photo-cell img {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s;
+    background-color: #eee;
+    display: block;
+}
+
+.photo-cell img:hover {
+    transform: scale(2.8);
+    z-index: 100;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    cursor: zoom-in;
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.status-hadir { background-color: var(--primary-green); }
+.status-izin  { background-color: var(--color-info); }
+.status-sakit { background-color: var(--color-warning); color: #212529; }
+.status-alfa  { background-color: var(--color-danger); }
+
+/* ============================================================
+   MANUAL ATTENDANCE SIDEBAR
+   ============================================================ */
+.manual-attendance-section {
+    background-color: white;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    height: fit-content;
+}
+
+.manual-attendance-section p { font-size: 13px; color: var(--text-secondary); margin-top: 0; }
+
+#absent-student-list {
+    list-style: none;
+    padding: 0;
+    max-height: 500px;
+    overflow-y: auto;
+    margin: 0;
+}
+
+.absent-student-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    gap: 10px;
+}
+
+.absent-student-item:hover {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px var(--primary-green-light);
+}
+
+.student-info { min-width: 0; flex-grow: 1; }
+
+.student-info span {
+    font-weight: 600;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.student-info small { color: var(--text-secondary); font-size: 12px; }
+
+.status-buttons { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+.status-buttons select,
+.status-buttons button {
+    padding: 8px 10px;
+    font-size: 13px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background-color: white;
+    font-family: var(--font-family);
+}
+
+.status-buttons select:focus {
+    border-color: var(--primary-green);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--primary-green-light);
+}
+
+.btn-save-manual {
+    background-color: var(--color-info) !important;
+    color: white !important;
+    cursor: pointer;
+    border: none !important;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.btn-save-manual:hover { background-color: #0b5ed7 !important; }
+
+.all-present {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--text-secondary);
+    font-style: italic;
+    background: var(--input-bg);
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-color);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: var(--font-family);
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.btn-footer, .btn-secondary {
+    background-color: white;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-footer:hover, .btn-secondary:hover {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: #cdd2d6;
+}
+
+.btn-export, .btn-primary {
+    background-color: var(--primary-green);
+    color: white;
+    box-shadow: 0 4px 12px rgba(30, 199, 44, 0.25);
+}
+
+.btn-export:hover, .btn-primary:hover {
+    background-color: var(--primary-green-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(30, 199, 44, 0.35);
+}
+
+.btn-logout {
+    background-color: #fff0f1;
+    color: var(--color-danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.btn-logout:hover {
+    background-color: var(--color-danger);
+    color: white;
+    border-color: var(--color-danger);
+}
+
+/* ============================================================
+   FOOTER ACTIONS
+   ============================================================ */
+.actions-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s;
+    padding: 20px;
+}
+
+.modal-overlay.visible { opacity: 1; visibility: visible; }
+
+.modal-content {
+    background: white;
+    padding: 32px;
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay.visible .modal-content { transform: scale(1) translateY(0); }
+.modal-content h2 { margin-top: 0; color: var(--text-primary); }
+.modal-content p  { color: var(--text-secondary); }
+
+.modal-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ============================================================
+   FORMS (shared)
+   ============================================================ */
+.form-group { margin-bottom: 20px; }
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-family: var(--font-family);
+    font-size: 15px;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    transition: all 0.2s;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-green);
+    outline: none;
+    background-color: white;
+    box-shadow: 0 0 0 4px var(--primary-green-light);
+}
+
+.gender-options { display: flex; align-items: center; gap: 24px; margin-top: 10px; flex-wrap: wrap; }
+.gender-option { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.gender-option label { font-weight: 500; margin: 0; color: var(--text-primary); cursor: pointer; text-transform: none; letter-spacing: 0; font-size: 14px; }
+.gender-option input[type="radio"] { accent-color: var(--primary-green); width: 1.1em; height: 1.1em; cursor: pointer; }
+
+/* ============================================================
+   KELOLA SISWA / REGISTER PAGE
+   ============================================================ */
+
+/* Tata letak 2 kolom: form kiri | tabel kanan */
+.register-content {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+/* Form pendaftaran — sticky saat tabel di-scroll */
+.form-section {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 24px;
+}
+
+.form-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Response message */
+#response-message {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+#response-message:not(:empty) { display: block; }
+
+/* JS harus menambahkan class ini sesuai kondisi */
+#response-message.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+#response-message.error   { background: #fff5f5; border: 1px solid #fcc;    color: var(--color-danger); }
+#response-message.loading { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; }
+
+/* Daftar siswa terdaftar — dengan SCROLL */
+.student-list-section {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    /* Batasi tinggi section agar tidak memanjang tanpa batas */
+    max-height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.student-list-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    flex-shrink: 0; /* judul tidak ikut scroll */
+}
+
+/* KUNCI SCROLL: table container punya overflow scroll, bukan section-nya */
+.student-list-section .table-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    min-height: 200px;
+}
+
+/* Header tabel sticky saat scroll */
+.student-list-section thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.student-list-section tbody tr:last-child td { border-bottom: none; }
+
+/* ============================================================
+   LOGIN PAGE — REDESIGNED (Dark Forest Theme)
+   ============================================================ */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    background-color: #0a2e10;
+    font-family: var(--font-family);
+}
+
+/* Background glow layers */
+.login-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 50% at 15% 5%,  rgba(30, 199, 44, 0.22) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 85% 95%, rgba(21, 163, 35, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 30% at 50% 50%, rgba(10, 80, 20, 0.5) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Subtle dot grid */
+.login-page::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+}
+
+/* Wrapper */
 .login-box {
     width: 100%;
     max-width: 400px;
-    padding: 40px;
-    background: #ffffff;
-    border-radius: 24px;
-    box-shadow: 
-        0 4px 6px -1px rgba(0, 0, 0, 0.05), 
-        0 10px 15px -3px rgba(0, 0, 0, 0.05),
-        0 0 0 1px rgba(0,0,0,0.02); /* Subtle border */
-    text-align: center;
     z-index: 10;
     position: relative;
-    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: loginEntrance 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
 }
 
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes loginEntrance {
+    from { opacity: 0; transform: translateY(28px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
 }
 
-/* Logo/Icon Area */
+/* ---- School Badge (above card) ---- */
 .login-header {
-    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 0 10px;
 }
 
+/* Icon box */
 .login-header::before {
-    content: '';
-    display: block;
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 20px;
-    background: linear-gradient(135deg, var(--primary-green) 0%, #15a323 100%);
-    border-radius: 16px;
-    box-shadow: 0 10px 20px rgba(30, 199, 44, 0.25);
-}
-
-.login-header::after {
-    content: '👋'; /* Mengganti icon siluet menjadi emoticon atau icon yang lebih ramah */
-    position: absolute;
-    top: 55px; /* Adjust based on padding */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 28px;
+    content: '🏫';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    width: 68px;
+    height: 68px;
+    background: linear-gradient(145deg, #1EC72C, #0d8f18);
+    border-radius: 20px;
+    margin-bottom: 16px;
+    box-shadow:
+        0 0 0 1px rgba(30, 199, 44, 0.35),
+        0 10px 30px rgba(0, 0, 0, 0.4),
+        0 0 80px rgba(30, 199, 44, 0.18);
+    line-height: 1;
 }
 
 .login-header h2 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--primary-green);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin: 0 0 5px 0;
+    color: rgba(30, 199, 44, 0.85);
+    margin: 0 0 8px 0;
 }
 
 .login-header h1 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-primary);
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
     margin: 0;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
 }
 
-/* Form Groups Light Mode */
-.login-box .form-group {
-    text-align: left;
-    margin-bottom: 20px;
+/* ---- White Card ---- */
+.login-card,
+.login-box > form,
+.login-box > #login-form {
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: var(--radius-xl);
+    padding: 32px 28px;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 24px 60px rgba(0, 0, 0, 0.45),
+        0 4px 12px rgba(0, 0, 0, 0.2);
 }
+
+/* Bila form langsung di dalam login-box (sesuai HTML kamu) */
+#login-form {
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: var(--radius-xl);
+    padding: 32px 28px;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 24px 60px rgba(0, 0, 0, 0.45);
+    margin: 0;
+}
+
+/* Form fields */
+.login-box .form-group { margin-bottom: 18px; }
 
 .login-box .form-group label {
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     color: var(--text-secondary);
     margin-bottom: 8px;
     display: block;
@@ -224,197 +742,329 @@ tbody tr:hover { background-color: #f8f9fa; }
 
 .login-box .form-group input {
     width: 100%;
-    padding: 14px 16px;
+    padding: 13px 16px;
     background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
     color: var(--text-primary);
     font-size: 15px;
     font-family: var(--font-family);
-    transition: all 0.2s ease;
+    transition: all 0.2s;
 }
 
 .login-box .form-group input:focus {
     outline: none;
-    background: #ffffff;
+    background: #fff;
     border-color: var(--primary-green);
-    box-shadow: 0 0 0 4px rgba(30, 199, 44, 0.1);
+    box-shadow: 0 0 0 4px var(--primary-green-light);
 }
 
-.login-box .form-group input::placeholder {
-    color: #adb5bd;
-}
+.login-box .form-group input::placeholder { color: #adb5bd; }
 
-/* Password Toggle Light */
+/* Password toggle */
 .password-group { position: relative; }
+
 .toggle-password {
     position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(2px); /* Adjust to align visually with input text */
+    right: 5px;
+    top: 70%;
+    transform: translateY(-50%);
     cursor: pointer;
     color: #adb5bd;
     transition: color 0.2s;
     background: none;
     border: none;
-    padding: 0;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 .toggle-password:hover { color: var(--primary-green); }
 
-/* Login Button - Konsisten dengan Dashboard */
+/* Login button */
 .btn-login {
     width: 100%;
     margin-top: 10px;
     padding: 14px 20px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     border: none;
-    background: var(--primary-green);
+    background: linear-gradient(135deg, var(--primary-green) 0%, #0ea81b 100%);
     color: white;
     font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
     cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(30, 199, 44, 0.25);
+    transition: all 0.22s;
+    box-shadow: 0 4px 16px rgba(30, 199, 44, 0.38);
+    font-family: var(--font-family);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-login::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+    pointer-events: none;
 }
 
 .btn-login:hover {
-    background-color: var(--primary-green-dark);
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(30, 199, 44, 0.35);
+    box-shadow: 0 10px 28px rgba(30, 199, 44, 0.50);
 }
 
-.btn-login:active { transform: translateY(0); }
+.btn-login:active { transform: translateY(0); box-shadow: 0 4px 12px rgba(30, 199, 44, 0.3); }
 
-/* Error Message Light */
+/* Error message */
 #error-message {
-    margin-top: 20px;
-    padding: 12px;
+    margin-top: 14px;
+    padding: 12px 14px;
     background: #fff5f5;
-    border: 1px solid #ffc9c9;
-    border-radius: 10px;
+    border: 1px solid #fcc;
+    border-radius: var(--radius-sm);
     color: var(--color-danger);
     font-size: 13px;
     font-weight: 500;
     display: none;
     text-align: left;
 }
+
 #error-message:not(:empty) { display: block; animation: shake 0.4s ease-in-out; }
 
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
+    25%       { transform: translateX(-5px); }
+    75%       { transform: translateX(5px); }
 }
 
+/* Footer below card */
 .login-footer {
-    margin-top: 25px;
-    font-size: 13px;
-    color: var(--text-secondary);
-}
-.login-footer a {
-    color: var(--primary-green);
-    font-weight: 600;
-    text-decoration: none;
-}
-.login-footer a:hover { text-decoration: underline; }
-
-
-/* --- RESPONSIVE MEDIA QUERIES --- */
-
-/* Tablet & Smaller Laptops */
-@media (max-width: 992px) { 
-    .container { margin: 20px auto; padding: 20px; width: 95%; } 
-    .content-wrapper { grid-template-columns: 1fr; gap: 30px; } 
-    .attendance-main { order: 1; } 
-    .manual-attendance-section { order: 2; } 
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.3px;
 }
 
-/* Mobile Devices (Fix Potongan & Layout) */
-@media (max-width: 768px) { 
-    .container { 
-        margin: 15px auto; 
-        padding: 15px; 
+/* ============================================================
+   SCROLLBAR STYLING
+   ============================================================ */
+.student-list-section .table-container::-webkit-scrollbar,
+#absent-student-list::-webkit-scrollbar { width: 5px; }
+
+.student-list-section .table-container::-webkit-scrollbar-track,
+#absent-student-list::-webkit-scrollbar-track { background: transparent; }
+
+.student-list-section .table-container::-webkit-scrollbar-thumb,
+#absent-student-list::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 10px; }
+
+.student-list-section .table-container::-webkit-scrollbar-thumb:hover,
+#absent-student-list::-webkit-scrollbar-thumb:hover { background: #b0b8c4; }
+
+/* ============================================================
+   RESPONSIVE — TABLET (≤ 1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+    .container { margin: 24px auto; padding: 24px; width: 95%; }
+    .content-wrapper { grid-template-columns: 1fr; gap: 24px; }
+    .attendance-main { order: 1; }
+    .manual-attendance-section { order: 2; }
+
+    /* Register: stack vertically */
+    .register-content { grid-template-columns: 1fr; gap: 24px; }
+    .form-section { position: static; } /* hapus sticky */
+    .student-list-section { max-height: 520px; }
+    .student-list-section .table-container { max-height: 400px; }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE (≤ 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+
+    /* Container */
+    .container { margin: 0; padding: 0; width: 100%; border-radius: 0; box-shadow: none; background: transparent; }
+
+    /* Header */
+    .main-header {
+        background: white;
+        margin: 12px 12px 0;
+        padding: 16px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .header-controls { align-items: stretch; width: 100%; gap: 10px; }
+    .date-picker-wrapper { width: 100%; justify-content: space-between; }
+    #date-picker { flex: 1; }
+
+    .registration-controls {
         width: 100%;
-        border-radius: 0; /* Full width di mobile terlihat lebih rapi tanpa rounded corner besar */
-        box-shadow: none;
-        background-color: transparent; /* Menyatu dengan bg body */
-    }
-    
-    /* Jika container background transparent, child elements harus punya background */
-    .table-container, .manual-attendance-section, .main-header {
-        background-color: #fff;
-        padding: 15px;
-        border-radius: 12px;
+        background: var(--input-bg);
         border: 1px solid var(--border-color);
-        margin-bottom: 20px;
+        padding: 10px 14px;
+        border-radius: var(--radius-md);
+        justify-content: space-between;
     }
-    
-    .main-header { 
-        flex-direction: column; 
-        align-items: flex-start; 
-        gap: 15px; 
-        padding-bottom: 15px;
-    }
-    
-    .title-section h1 { font-size: 22px; } 
-    
-    .registration-controls { 
-        width: 100%; 
-        justify-content: space-between; 
-        background-color: transparent; 
-        border: none; 
-        padding: 0; 
-    }
-    
-    .content-wrapper { gap: 20px; }
-    
-    /* Table Adjustments */
-    th, td { padding: 12px 10px; font-size: 13px; white-space: nowrap; } 
-    .photo-cell img { width: 40px; height: 40px; } 
-    
-    /* Footer Stack */
-    .actions-footer { flex-direction: column; gap: 12px; } 
-    .btn { width: 100%; padding: 12px; } 
-    
-    .user-controls { 
-        flex-direction: column; 
-        width: 100%; 
-        gap: 15px; 
-        margin-top: 10px;
-    } 
-    .user-info { 
-        border-left: none; 
-        padding-left: 0; 
-        width: 100%; 
-        justify-content: center; 
-        background: white; 
-        padding: 10px; 
-        border-radius: 8px; 
+
+    .user-controls { flex-direction: row; justify-content: flex-end; gap: 10px; }
+    .user-info { border-left: none; padding-left: 0; }
+
+    /* Content cards */
+    .content-wrapper { padding: 12px; gap: 16px; }
+
+    .attendance-main,
+    .manual-attendance-section {
+        background: white;
+        border-radius: var(--radius-lg);
         border: 1px solid var(--border-color);
-    } 
-    
-    /* Manual Attendance Item Stack */
-    .absent-student-item { flex-direction: column; align-items: flex-start; gap: 12px; } 
-    .student-info { margin-bottom: 5px; width: 100%; }
-    .status-buttons { width: 100%; display: flex; gap: 8px; } 
-    .status-buttons select { flex-grow: 1; margin-left: 0; } 
+        padding: 16px;
+    }
+
+    .attendance-main h2,
+    .manual-attendance-section h2 { font-size: 16px; }
+
+    /* ---- TABLE → CARD LAYOUT (dashboard) ---- */
+    .table-container { border: none; border-radius: 0; overflow: visible; }
+    table, thead, tbody, tr, th, td { display: block; }
+    thead { display: none; }
+
+    tbody tr {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        margin-bottom: 12px;
+        padding: 14px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 4px 12px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    tbody tr:hover { background: #fafbfc; }
+
+    tbody tr td:nth-child(1) {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-align: center;
+        background: var(--input-bg);
+        border-radius: var(--radius-sm);
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: none;
+        grid-row: 1 / 3;
+        align-self: center;
+    }
+
+    tbody tr td { border-bottom: none; padding: 2px 0; }
+
+    tbody tr td.photo-cell { display: flex; align-items: center; grid-column: 2; }
+    tbody tr td.photo-cell img { width: 40px; height: 40px; }
+
+    tbody tr td:last-child {
+        grid-column: 1 / -1;
+        padding: 8px 0 0;
+        margin-top: 6px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    tbody tr td:last-child::before {
+        content: 'Status:';
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* ---- Register page mobile ---- */
+    .register-content { padding: 12px; gap: 14px; }
+
+    .form-section,
+    .student-list-section {
+        border-radius: var(--radius-lg);
+        padding: 18px;
+    }
+
+    .student-list-section {
+        max-height: none; /* biarkan tinggi alami, scroll di dalam container */
+    }
+
+    /* Tabel siswa terdaftar: pakai scroll horizontal tipis di mobile */
+    .student-list-section .table-container {
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: auto; /* horizontal scroll jika kolom tidak muat */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Reset card transform khusus untuk student-list-section agar tabel normal */
+    .student-list-section .table-container table,
+    .student-list-section .table-container thead,
+    .student-list-section .table-container tbody,
+    .student-list-section .table-container tr,
+    .student-list-section .table-container th,
+    .student-list-section .table-container td { display: revert; }
+
+    .student-list-section .table-container th,
+    .student-list-section .table-container td { padding: 10px 12px; font-size: 13px; white-space: nowrap; }
+
+    /* Manual absent item */
+    .absent-student-item { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .student-info { width: 100%; }
+    .status-buttons { width: 100%; gap: 8px; }
+    .status-buttons select { flex: 1; margin-left: 0; }
     .status-buttons button { margin-left: 0; }
-    
-    /* Login Mobile specific */
-    .login-box { padding: 30px 20px; }
-    .login-header h1 { font-size: 22px; }
+
+    /* Footer */
+    .actions-footer {
+        margin: 0 12px 12px;
+        background: white;
+        padding: 16px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn { width: 100%; padding: 13px; font-size: 14px; }
+
+    /* Modal */
+    .modal-content { padding: 24px 20px; border-radius: var(--radius-lg); }
+    .modal-actions { flex-direction: column-reverse; }
+    .modal-actions .btn { width: 100%; }
+
+    /* Login mobile */
+    .login-header h1 { font-size: 18px; }
+    .login-header::before { width: 58px; height: 58px; font-size: 26px; }
+    #login-form { padding: 26px 22px; }
 }
 
+/* ============================================================
+   RESPONSIVE — SMALL MOBILE (≤ 480px)
+   ============================================================ */
 @media (max-width: 480px) {
-    .container { margin: 10px auto; padding: 10px; }
+    .main-header { margin: 8px 8px 0; }
+    .content-wrapper, .register-content { padding: 8px; gap: 10px; }
     .title-section h1 { font-size: 20px; }
-    
-    /* Paksa tombol register mode stack jika layar sangat kecil */
-    .registration-controls { flex-direction: column; align-items: stretch; text-align: center; gap: 10px; }
+
+    .registration-controls { flex-direction: column; align-items: stretch; gap: 10px; text-align: center; }
     #toggle-reg-mode { width: 100%; }
-    
-    /* Login Page Extra Small */
-    .login-page { padding: 15px; }
-    .login-box { padding: 25px 20px; }
+
+    .login-page { padding: 14px; }
+    .login-header h1 { font-size: 17px; }
+    #login-form { padding: 22px 18px; }
+    .student-list-section .table-container { max-height: 260px; }
 }
