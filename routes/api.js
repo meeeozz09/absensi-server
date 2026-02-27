@@ -194,7 +194,7 @@ router.get('/export', async (req, res) => {
             { header: 'No.', key: 'no', width: 5 },
             { header: 'Tanggal', key: 'tanggal', width: 20 },
             { header: 'Waktu', key: 'waktu', width: 15 },
-            { header: 'ID Siswa', key: 'studentId', width: 20 },
+            { header: 'NIS', key: 'studentId', width: 20 },
             { header: 'Nama Siswa', key: 'name', width: 35 },
             { header: 'Jenis Kelamin', key: 'gender', width: 15 },
             { header: 'Status', key: 'status', width: 12 },
