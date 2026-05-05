@@ -163,69 +163,151 @@ router.get('/export', async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
 
-        const query = {};
-        const dateFilter = {};
+        // Validasi: pastikan tanggal ada untuk laporan bulanan
+        if (!startDate || !endDate) {
+            return res.status(400).send('Harap tentukan rentang tanggal (Tanggal Mulai dan Tanggal Akhir) untuk membuat laporan.');
+        }
+
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
         
-        if (startDate) {
-            const start = new Date(startDate);
-            start.setHours(0, 0, 0, 0);
-            dateFilter.$gte = start;
-        }
+        // Ambil nama bulan dan tahun dari tanggal mulai
+        const monthName = start.toLocaleDateString('id-ID', { month: 'long' });
+        const year = start.getFullYear();
 
-        if (endDate) {
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999);
-            dateFilter.$lte = end;
-        }
+        // 1. Ambil semua siswa (kita asumsikan semua siswa adalah target laporan)
+        const allStudents = await Student.find().sort({ name: 1 });
 
-        if (Object.keys(dateFilter).length > 0) {
-            query.timestamp = dateFilter;
-        }
+        // 2. Ambil semua data absensi dalam rentang tanggal yang dipilih
+        const attendances = await Attendance.find({
+            timestamp: { $gte: start, $lte: end }
+        }).populate('student');
 
-        console.log("Mengekspor data dengan query:", JSON.stringify(query));
-
-        const attendances = await Attendance.find(query).sort({ timestamp: 'desc' }).populate('student');
-
-        const workbook = new exceljs.Workbook();
-        workbook.creator = 'Sistem Absensi';
-        const worksheet = workbook.addWorksheet('Laporan Absensi');
-
-        worksheet.columns = [
-            { header: 'No.', key: 'no', width: 5 },
-            { header: 'Tanggal', key: 'tanggal', width: 20 },
-            { header: 'Waktu', key: 'waktu', width: 15 },
-            { header: 'NIS', key: 'studentId', width: 20 },
-            { header: 'Nama Siswa', key: 'name', width: 35 },
-            { header: 'Jenis Kelamin', key: 'gender', width: 15 },
-            { header: 'Status', key: 'status', width: 12 },
-            { header: 'Keterangan', key: 'keterangan', width: 40 }
-        ];
-        worksheet.getRow(1).font = { bold: true };
-
-        if (attendances.length > 0) {
-            attendances.forEach((att, index) => {
-                if (att.student) {
-                    const ts = new Date(att.timestamp);
-                    worksheet.addRow({
-                        no: index + 1,
-                        tanggal: ts.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }),
-                        waktu: att.status === 'HADIR' ? ts.toLocaleTimeString('id-ID') : '-',
-                        studentId: att.student.studentId,
-                        name: att.student.name,
-                        gender: att.student.gender, 
-                        status: att.status,
-                        keterangan: att.keterangan || ''
-                    });
-                }
+        // 3. Proses dan transformasi data
+        const studentDataMap = new Map();
+        
+        // Inisialisasi map dengan semua siswa
+        allStudents.forEach(student => {
+            studentDataMap.set(student._id.toString(), {
+                name: student.name,
+                studentId: student.studentId,
+                gender: student.gender,
+                attendances: new Map(), // Map untuk menyimpan absensi per tanggal
+                counts: { HADIR: 0, IZIN: 0, SAKIT: 0, ALFA: 0 }
             });
-        } else {
-            worksheet.addRow({ no: '-', tanggal: 'Tidak ada data ditemukan untuk periode ini.' });
+        });
+
+        // Isi data absensi ke dalam map
+        attendances.forEach(att => {
+            if (att.student) {
+                const studentId = att.student._id.toString();
+                const dayOfMonth = new Date(att.timestamp).getDate();
+                
+                if (studentDataMap.has(studentId)) {
+                    const studentData = studentDataMap.get(studentId);
+                    let symbol = '';
+                    switch(att.status) {
+                        case 'HADIR': symbol = '✓'; break;
+                        case 'IZIN': symbol = 'I'; break;
+                        case 'SAKIT': symbol = 'S'; break;
+                        case 'ALFA': symbol = 'A'; break;
+                    }
+                    studentData.attendances.set(dayOfMonth, symbol);
+                    studentData.counts[att.status]++;
+                }
+            }
+        });
+
+        // 4. Generate file Excel
+        const workbook = new exceljs.Workbook();
+        workbook.creator = 'Sistem Absensi SDN 29 Bontomacinna';
+        const worksheet = workbook.addWorksheet(`Absensi ${monthName} ${year}`);
+
+        // --- Membuat Header Laporan ---
+        worksheet.mergeCells('A1:AI1');
+        worksheet.getCell('A1').value = 'REKAPITULASI DAFTAR HADIR SISWA';
+        worksheet.getCell('A1').font = { name: 'Arial', size: 16, bold: true };
+        worksheet.getCell('A1').alignment = { horizontal: 'center' };
+
+        worksheet.addRow([]); // Baris kosong
+        worksheet.addRow(['Kelas', ':', 'VI']);
+        worksheet.addRow(['Bulan', ':', `${monthName.toUpperCase()} ${year}`]);
+        worksheet.addRow([]); // Baris kosong
+
+        // --- Membuat Header Tabel ---
+        const daysInMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
+        const headerTop = ['NO', 'NAMA SISWA', 'L/P', ...Array(daysInMonth).fill(''), 'JML'];
+        const headerMid = ['', '', '', ...Array(daysInMonth).fill(''), 'H', 'I', 'S', 'A'];
+        
+        worksheet.addRow(headerTop); // Misal: Row 6
+        worksheet.addRow(headerMid); // Misal: Row 7
+        
+        // Merge header
+        worksheet.mergeCells('A6:A7');
+        worksheet.mergeCells('B6:B7');
+        worksheet.mergeCells('C6:C7');
+        worksheet.mergeCells('D6', `AD${6}`); // Merge 'TANGGAL'
+        worksheet.getCell('D6').value = 'TANGGAL';
+        worksheet.mergeCells('AE6', 'AH6'); // Merge 'JUMLAH'
+        worksheet.getCell('AE6').value = 'JUMLAH';
+
+        // Isi tanggal 1 s/d 31
+        const dateHeaderRow = worksheet.getRow(7);
+        for (let i = 1; i <= daysInMonth; i++) {
+            dateHeaderRow.getCell(3 + i).value = i;
         }
 
-        const fileName = `Laporan_Absensi_${new Date().toISOString().slice(0,10)}.xlsx`;
+        // Styling header
+        [worksheet.getRow(6), worksheet.getRow(7)].forEach(row => {
+            row.font = { bold: true };
+            row.alignment = { horizontal: 'center', vertical: 'middle' };
+        });
+
+        // --- Mengisi Data Siswa ---
+        let currentRow = 8;
+        allStudents.forEach((student, index) => {
+            const studentId = student._id.toString();
+            const data = studentDataMap.get(studentId);
+
+            const rowData = [
+                index + 1,
+                data.name,
+                data.gender === 'Laki-laki' ? 'L' : 'P'
+            ];
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                rowData.push(data.attendances.get(i) || '');
+            }
+
+            rowData.push(data.counts.HADIR, data.counts.IZIN, data.counts.SAKIT, data.counts.ALFA);
+            worksheet.addRow(rowData);
+        });
+
+        // --- Final Styling ---
+        worksheet.getColumn('B').width = 35; // Nama
+        worksheet.getColumn('C').width = 5;  // L/P
+        // Atur lebar kolom tanggal menjadi kecil
+        for (let i = 4; i <= 3 + daysInMonth; i++) {
+            worksheet.getColumn(i).width = 4;
+        }
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber > 5) { // Mulai dari header tabel
+                row.eachCell({ includeEmpty: true }, cell => {
+                    cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+                    if (rowNumber > 7) { // Data siswa
+                        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+                    }
+                });
+                row.getCell(2).alignment = { horizontal: 'left' }; // Nama rata kiri
+            }
+        });
+
+        // --- Ekspor File ---
+        const fileName = `Rekap_Absensi_${monthName}_${year}.xlsx`;
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-
         await workbook.xlsx.write(res);
         res.end();
 
@@ -234,6 +316,7 @@ router.get('/export', async (req, res) => {
         res.status(500).send('Terjadi kesalahan saat membuat file Excel. Cek log server.');
     }
 });
+
 
 router.get('/dashboard-data', async (req, res) => {
     try {
